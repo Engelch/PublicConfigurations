@@ -1,0 +1,51 @@
+# initialise the git variables
+[ "$1" = -d ] && _debug=True
+_fullName=$(git config --global user.name)
+if [ "$_fullName" = "" ] ; then
+    _userName=$(id -un)     # get current potential user-name
+    _fullName=$(getent passwd | egrep ^$_userName | awk -F: '{print $5}')
+fi
+/bin/echo Current git username for commits: $_fullName
+/bin/echo -n 'ENTER to keep current user name or:' ;  read  _gitUsername
+[ -z $_gitUsername ] && _gitUsername=$_fullName
+[ -z $_debug ] && git config --global user.name "$_gitUsername"
+[ ! -z $_debug ] && /bin/echo WOULD: git config --global user.name "$_gitUsername"
+
+_gitMailAddr=$(git config --global user.email)
+/bin/echo Current git email name: $_gitMailAddr
+/bin/echo -n  'ENTER to keep current email address or:'; read _tmp 
+[ ! -z $_tmp ] && _gitMailAddr=$_tmp
+[ -z $_debug ] && git config --global user.email "$_gitMailAddr"
+[ ! -z $_debug ] && /bin/echo WOULD: git config --global user.email "$_gitMailAddr"
+
+[ -z $_debug ] && git config --global alias.last 'log -1 HEAD'
+[ ! -z $_debug ] && /bin/echo WOULD: git config --global alias.last 'log -1 HEAD'
+
+[ -z $_debug ] && git config --global pull.rebase true # use rebase
+[ ! -z $_debug ] && /bin/echo WOULD: git config --global pull.rebase true # use rebase
+
+[ -z $_debug ] && git config --global pager.branch false # no pager for gibr
+[ ! -z $_debug ] && /bin/echo WOULD: git config --global pager.branch false # no pager for gibr
+
+for _editor in vi vim emacs uemacs nano ; do
+    if $(command -v $_editor >/dev/null 2>&1) ; then
+        [ -z $_debug ] && git config --global core.editor $_editor
+        [ ! -z $_debug ] && /bin/echo WOULD: git config --global core.editor $_editor
+        /bin/echo Editor set to $_editor
+        break
+    fi
+done
+case $(uname) in
+Linux)
+    [[ $(uname -r ) =~ Microsoft ]] && [ -z $_debug ] && git config --global credential.helper manager    # WSL support
+    [[ $(uname -r ) =~ Microsoft ]] && [ ! -z $_debug ] && /bin/echo WOULD: git config --global credential.helper manager    # WSL support
+    
+    [[ ! $(uname -r ) =~ Microsoft ]] && [ -z $_debug ] && git config --global credential.helper store    # classical Linux
+    [[ ! $(uname -r ) =~ Microsoft ]] && [ ! -z $_debug ] && /bin/echo WOULD:git config --global credential.helper store    # classical Linux
+    ;;
+Darwin) 
+    [ -z $_debug ] && git config --global credential.helper osxkeychain
+    [ ! -z $_debug ] && /bin/echo WOULD: git config --global credential.helper osxkeychain
+    ;;
+*) error OS not supported to set the credential.helper variable.
+esac

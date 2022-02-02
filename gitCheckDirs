@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# --u210902
+# Jump to home directory so that the output does not contain the path of the home directory.
+# Finally, just syntactic improvement.
+# build up list of directories from .gitCheck file
+if [ $# -gt 0 ] ; then
+    dirs="$*"
+else
+    [ ! -f "$HOME/.gitCheck" ] && echo Cannot find $HOME/.gitCheck 1>&2 && exit 1
+    dirs="$(grep -v '^$' "$HOME/.gitCheck" | sed 's/#.*//')"
+    cd
+fi 
+_filePath=
+for file in $dirs ; do
+    [ ! -d "$file" ] && continue
+    if [ -d "$file/.git"  2>/dev/null ] ; then
+        # if the directory is under git, include it
+        _filePath="$_filePath $file"
+    else
+        # if the directory is not under git, determine all subdirectories which are under git
+        for elem in $(find $file -name .git -type d -print) ; do
+          _filePath="$_filePath $(dirname $elem)"
+        done
+    fi
+done
+# echo List of diretories to be checked: $_filePath
+mgitstatus $_filePath
+
+#### EOF

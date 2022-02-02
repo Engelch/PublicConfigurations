@@ -1,0 +1,9 @@
+.DS_Store
+cover.out
+coverage.out
+.touchfile
+*.tfstate
+.terraform
+terraform.tfstate.backup
+*.backup
+*~

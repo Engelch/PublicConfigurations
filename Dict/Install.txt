@@ -1,0 +1,8 @@
+Run
+
+```
+hunspell -D
+```
+
+to get information which directories are read by the tool. Here, we use `~/Library/Spelling`.
+For the default dictionary, new words are added to ~/.hunspell_default.
