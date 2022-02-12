@@ -14,8 +14,10 @@ setopt HIST_IGNORE_DUPS         # do not store duplications
 setopt HIST_FIND_NO_DUPS        # ignore duplicates when searching
 setopt HIST_REDUCE_BLANKS       # removes blank lines from history
 
-setopt CORRECT
-setopt CORRECT_ALL
+#setopt CORRECT
+#setopt CORRECT_ALL
+# correction corrupted to many commands on my side
+unsetopt correct_all
 
 #### Reverting Shell Options for Defaults
 ## emulate -LR zsh                 # Useful in scripts
