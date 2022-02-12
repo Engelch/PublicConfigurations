@@ -8,4 +8,4 @@ if [ -r .version ] ; then
     echo version is $version
 fi
 echo Building image $name$version...
-$dry docker build -t $name$version .
+$dry docker build -t $name$version -t $name -t $name:latest .
