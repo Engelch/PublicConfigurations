@@ -70,17 +70,19 @@ function tempDir()                      { mktemp -d "${TMPDIR:-/tmp/}$_app.YYYYY
 declare -r _appDir=$(cd $(dirname $0); /bin/pwd)
 CMD=$(basename $0)
 
+[ "$1" = -d ] && shift && debugSet
+[ "$1" = -n ] && shift && dry=echo
+[ "$1" = -d ] && shift && debugSet
+
+[ ! -z "$dry" ] && echo DRY RUN MODE ..................
+
 debug appDir $_appDir
 debug CMD $CMD
 
-[ ! -x ${_appDir}/version.sh ] && errorExit 1 Could not find version.sh
+exitIfBinariesNotFound bumpversion
 
-debug bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
-debugExecIfDebug exit 0
+[ ! -x ${_appDir}/version.sh ] && errorExit 1 Could not find ${_appDir}/version.sh
 
-bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
+$dry bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
 
-
-
-
-
+# eof
