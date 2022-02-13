@@ -83,10 +83,10 @@ debug PWD is $(pwd)
 
 exitIfBinariesNotFound bumpversion
 
-[ ! -x ${_appDir}/version.sh ] && errorExit 1 Could not find ${_appDir}/version.sh
+[ ! -x ./bin/version.sh ] && errorExit 1 Could not find ./bin/version.sh
 
-debug version is $(${appDir}/version.sh)
+debug version is $(./bin/version.sh)
 
-$dry bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
+$dry bumpversion --current-version `./bin/version.sh` --allow-dirty ${CMD} $(./bin/version.sh -d | cut -d: -f1)
 
 # eof
