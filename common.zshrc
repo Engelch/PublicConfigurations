@@ -429,18 +429,20 @@ function tlsCert() {
    local a=$(mktemp /tmp/tlsCert.XXXXXXXX)
    trap "rm -f $a" EXIT
    cat >> $a <<EOF
+#!/usr/bin/env ruby
+VERSION="v2.0.2"
 args    = ARGV.join(" ")
 count   = -1 
 outarr  = Array.new()
-
 # read lines beginning with BEGIN CERTIFICATE and the following into an outarr
 IO.foreach(args) do | name |
     if name.include? "----BEGIN CERTIFICATE"
         count += 1
     end
-    outarr[count] = outarr[count].to_s.concat(name) if count >= 0 
+    outarr[count] = outarr[count].to_s + name if count >= 0 
 end
-print "Number of certificates (tlsCert v2.0.0): ", count+1, "\n================================\n"
+print "Number of certificates (#{VERSION}): ", count+1, "\n"
+print "================================\n"
 (count+1).times do |val|
     IO.popen("openssl x509 -in - -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName' 2>/dev/null", "w+") do |proc|
         proc.write(outarr[val])
