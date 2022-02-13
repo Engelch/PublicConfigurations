@@ -67,6 +67,7 @@ function tempDir()                      { mktemp -d "${TMPDIR:-/tmp/}$_app.YYYYY
 #     ;;
 # esac
 
+declare -r _version="0.2.0"
 declare -r _appDir=$(cd $(dirname $0); /bin/pwd)
 CMD=$(basename $0)
 
@@ -78,10 +79,13 @@ CMD=$(basename $0)
 
 debug appDir $_appDir
 debug CMD $CMD
+debug PWD is $(pwd)
 
 exitIfBinariesNotFound bumpversion
 
 [ ! -x ${_appDir}/version.sh ] && errorExit 1 Could not find ${_appDir}/version.sh
+
+debug version is $(${appDir}/version.sh)
 
 $dry bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
 
