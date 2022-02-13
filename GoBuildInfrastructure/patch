@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# bumpversion increase script
+# bumpversion increase script
+
+#########################################################################################
+# FUNCTIONS
+
+# --- debug: Conditional debugging. All commands begin w/ debug.
+
+function debugSet()             { DebugFlag=TRUE; return 0; }
+function debugUnset()           { DebugFlag=; return 0; }
+function debugExecIfDebug()     { [ ! -z $DebugFlag ] && $*; }
+function debug()                { [ ! -z $DebugFlag ] && err 'DEBUG:' $* 1>&2 ; return 0; }
+
+function verbose()              { [ "$VerboseFlag" = TRUE ] && echo -n $* ; return 0; }
+function verbosenl()            { [ "$VerboseFlag" = TRUE ] && echo $* ; return 0; }
+function verboseSet()           { VerboseFlag=TRUE; return 0; }
+
+# --- Colour lines. It requires either linux echo or zsh built-in echo
+
+function colBold()      { printf '\e[1m'; return 0; }
+function colNormal()    { printf "\e[0m"; return 0; }
+function colBlink()     { printf "\e[5m"; return 0; }
+
+# --- Exits
+
+# always show such a message.  If known terminal, print the message
+# in reverse video mode. This is the other way, not using escape sequences
+function soErr()
+{
+    err $*
+}
+
+function error()        { soErr 'ERROR:' $*; return 0; } # similar to err but with ERROR prefix and reverse colour (curses).
+function errorExit()    { EXITCODE=$1 ; shift; error $* 1>&2; exit $EXITCODE; }
+function exitIfErr()    { a="$1"; b="$2"; shift; shift; [ "$a" -ne 0 ] && errorExit $b App returned $b $*; }
+function err()          { echo $* 1>&2; } # just write to stderr
+function err4()          { echo '   ' $* 1>&2; } # just write to stderr
+function err8()          { echo '       ' $* 1>&2; } # just write to stderr
+
+# --- Existance checks
+function exitIfBinariesNotFound()       { for file in $@; do [ $(command -v "$file") ] || errorExit 253 binary not found: $file; done }
+function exitIfPlainFilesNotExisting()  { for file in $*; do [ ! -f $file ] && errorExit 254 'plain file not found:'$file 1>&2; done }
+function exitIfFilesNotExisting()       { for file in $*; do [ ! -e $file ] && errorExit 255 'file not found:'$file 1>&2; done }
+function exitIfDirsNotExisting()        { for dir in $*; do [ ! -d $dir ] && errorExit 252 "$APP:ERROR:directory not found:"$dir; done }
+
+# --- Temporary file/directory  creation
+# -- file creation -- TMP1=$(tempFile); TMP2=$(tempFile) ;;;; trap "rm -f $TMP1 $TMP2" EXIT
+# -- directory creation -- TMPDIR=$(tempDir) ;;;;;  trap "rm -fr $TMPDIR;" EXIT
+#
+function tempFile()                     { mktemp ${TMPDIR:-/tmp/}$_app.XXXXXXXX; }
+function tempDir()                      { mktemp -d "${TMPDIR:-/tmp/}$_app.YYYYYYYYY"; }
+# realpath as shell, argument either supplied as stdin or as $1
+
+# MAIN ====================================================================
+
+# _fileMask=*.go
+# _files=$(egrep  -l 'app(\.)?Version[[:space:]]*=' $_fileMask)
+# _numFiles=$(echo $_files | wc -w | xargs) # xargs to trim spaces
+# case $_numFiles in
+# 0)  errorExit 1 No file with version information found. Change the fileMask?
+#     ;;
+# 1)  debug One file found: $_files
+#     ;;
+# *)  errorExit 2 More than one file \($_numFiles\) with version information found. Change the fileMask? Files are: $_files
+#     ;;
+# esac
+
+declare -r _appDir=$(cd $(dirname $0); /bin/pwd)
+CMD=$(basename $0)
+
+debug appDir $_appDir
+debug CMD $CMD
+
+[ ! -x ${_appDir}/version.sh ] && errorExit 1 Could not find version.sh
+
+debug bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
+debugExecIfDebug exit 0
+
+bumpversion --current-version `${_appDir}/version.sh` --allow-dirty ${CMD} $(${_appDir}/version.sh -d | cut -d: -f1)
+
+
+
+
+

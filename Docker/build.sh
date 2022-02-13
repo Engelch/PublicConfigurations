@@ -4,7 +4,7 @@
 [ "$1" = -n ] && dry=echo && echo DRY RUN ONLY.
 name=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z])
 if [ -r .version ] ; then
-    version=":"$(cat .version | grep -v '^$')
+    version=":"$(cat .version | grep -v '^$' | sed 's/[[:space:]]*#.*$//')
     echo version is $version
 fi
 echo Building image $name$version...

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# always show such a message.  If known terminal, print the message
+# in reverse video mode. This is the other way, not using escape sequences
+function soErr() { err $*; }
+
+function error()        { soErr 'ERROR:' $*; return 0; } # similar to err but with ERROR prefix and reverse colour (curses).
+function errorExit()    { EXITCODE=$1 ; shift; error $* 1>&2; exit $EXITCODE; }
+function exitIfErr()    { a="$1"; b="$2"; shift; shift; [ "$a" -ne 0 ] && errorExit $b App returned $b $*; }
+function err()          { echo $* 1>&2; } # just write to stderr
+function err4()          { echo '   ' $* 1>&2; } # just write to stderr
+function err8()          { echo '       ' $* 1>&2; } # just write to stderr
+
+declare -r _appDir=$(dirname $0)
+if [ $(basename $_appDir) = bin ] ; then
+    cd $_appDir/..
+else
+    errorExit 1 distclean does not seem to be in the bin directory of the project. Dir is $(basename $_appDir)
+fi
+
+find . -name coverage.out -exec /bin/rm -f {} \;
+find . -name '*~' -exec /bin/rm -f {} \;
+find . -name '*.bak' -exec /bin/rm -f {} \;
+find . -name '*.bup' -exec /bin/rm -f {} \;
+/bin/rm -fr ./build
