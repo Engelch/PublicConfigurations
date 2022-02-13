@@ -7,8 +7,8 @@ appDir=$(dirname $0)
 cd "$appDir"
 [ $(pwd | xargs basename) = bin ] && cd .. # correct location if binary in bin
 
-if [ -f "$appDir/versionFilePattern" ] ; then
-   _versionFilePattern=$(cat "$appDir/versionFilePattern" | grep -v '^$' | egrep -v '^[[:space:]]*#' | sed 's/[[:space:]]*#.*$//')
+if [ -f "./versionFilePattern" ] ; then
+   _versionFilePattern=$(cat "./versionFilePattern" | grep -v '^$' | egrep -v '^[[:space:]]*#' | sed 's/[[:space:]]*#.*$//')
    START="egrep '' $_versionFilePattern /dev/null | grep -v '^$' | egrep -v '^[[:space:]]*#'"
 else
    _versionFilePattern='*.go'
