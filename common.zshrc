@@ -408,19 +408,51 @@ function TRAPEXIT() {
 # create fingerprint of certificate
 function tlsCertFingerprint() {  local output="/dev/null" ; [ "$1" = -v ] &&  output="/dev/stdout" && shift ; local file; for file in $*; do /bin/echo -n "$file:" > $output; openssl x509 -modulus -noout -in "$file" | openssl sha256 | sed 's/.*stdin)= //' ; done;  }
 
+# split -p not existing under Linux .... > switch to simple ruby as existing on most plaforms
 # show certificate (replacing the package version tlsCertView) - removed awk against split
-function tlsCert() { 
-   setopt +o nomatch ; 
-   local file
-   local infile
-   local tmpCertDir=$(mktemp -d tmpx.XXXXXX); trap "rm -fr $tmpCertDir" INT TERM EXIT;
-   for file in $* ; do
-      split -p "-----BEGIN CERTIFICATE" $file $tmpCertDir/$file.
-      for infile in $tmpCertDir/$file*; do 
-         openssl x509 -in "$infile" -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName' 2>/dev/null | sed -e "s,^,$(basename $infile .in):,"; openssl x509 -in "$infile" -modulus -noout 2>/dev/null | openssl sha256 |  sed -e "s,^.*= ,$(basename $infile .in):SHA256 Fingerprint=,"; 
-      done; 
-   done
-   setopt -o nomatch; 
+# function tlsCert() { 
+#    setopt +o nomatch ; 
+#    local file
+#    local infile
+#    local tmpCertDir=$(mktemp -d tmpx.XXXXXX); trap "rm -fr $tmpCertDir" INT TERM EXIT;
+
+#    for file in $* ; do
+#       split -p "-----BEGIN CERTIFICATE" $file $tmpCertDir/$file.
+#       for infile in $tmpCertDir/$file*; do 
+#          openssl x509 -in "$infile" -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName' 2>/dev/null | sed -e "s,^,$(basename $infile .in):,"; openssl x509 -in "$infile" -modulus -noout 2>/dev/null | openssl sha256 |  sed -e "s,^.*= ,$(basename $infile .in):SHA256 Fingerprint=,"; 
+#       done; 
+#    done
+#    setopt -o nomatch; 
+# }
+
+function tlsCert() {
+   local a=$(mktemp /tmp/tlsCert.XXXXXXXX)
+   trap "rm -f $a" EXIT
+   cat >> $a <<EOF
+args    = ARGV.join(" ")
+count   = -1 
+outarr  = Array.new()
+
+# read lines beginning with BEGIN CERTIFICATE and the following into an outarr
+IO.foreach(args) do | name |
+    if name.include? "----BEGIN CERTIFICATE"
+        count += 1
+    end
+    outarr[count] = outarr[count].to_s.concat(name) if count >= 0 
+end
+print "Number of certificates (tlsCert v2.0.0): ", count+1, "\n================================\n"
+(count+1).times do |val|
+    IO.popen("openssl x509 -in - -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName' 2>/dev/null", "w+") do |proc|
+        proc.write(outarr[val])
+        proc.close_write
+        print "--------------------------------\n" if val > 0
+        print(proc.read)
+    end
+end
+print "================================\n"
+EOF
+   ruby $a $*
+   unset a
 }
 
 # ------ Keys
