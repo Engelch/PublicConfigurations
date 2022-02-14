@@ -431,7 +431,7 @@ function tlsCert() {
    trap "rm -f $a" EXIT
    cat >> $a <<EOF
 #!/usr/bin/env ruby
-VERSION="v2.0.2"
+VERSION="v2.1.0"
 args    = ARGV.join(" ")
 count   = -1 
 outarr  = Array.new()
@@ -445,7 +445,7 @@ end
 print "Number of certificates (#{VERSION}): ", count+1, "\n"
 print "================================\n"
 (count+1).times do |val|
-    IO.popen("openssl x509 -in - -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName' 2>/dev/null", "w+") do |proc|
+    IO.popen("openssl x509 -in - -subject -email -issuer -dates -sha256 -serial -noout -ext ‘subjectAltName,authorityKeyIdentifier,subjectKeyIdentifier’ 2>/dev/null", "w+") do |proc|
         proc.write(outarr[val])
         proc.close_write
         print "--------------------------------\n" if val > 0
@@ -481,7 +481,7 @@ function zshSetVersion() {
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   export ZSH_RC_VERSION="1.0.0"
+   export ZSH_RC_VERSION="1.1.0"
    debug ZSH_RC_VERSION is $ZSH_RC_VERSION
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
