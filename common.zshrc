@@ -14,10 +14,11 @@ setopt HIST_IGNORE_DUPS         # do not store duplications
 setopt HIST_FIND_NO_DUPS        # ignore duplicates when searching
 setopt HIST_REDUCE_BLANKS       # removes blank lines from history
 
-#setopt CORRECT
-#setopt CORRECT_ALL
-# correction corrupted to many commands on my side
+#disable auto correct # correct_all will disable autocorrect for options only, not for commands themselves.
+# for all including commands use just correct
 unsetopt correct_all
+
+set +o nomatch    # get rid of the error messages if a shell globbing pattern cannot be resolved
 
 #### Reverting Shell Options for Defaults
 ## emulate -LR zsh                 # Useful in scripts
@@ -480,7 +481,7 @@ function zshSetVersion() {
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   export ZSH_RC_VERSION="0.9.1"
+   export ZSH_RC_VERSION="1.0.0"
    debug ZSH_RC_VERSION is $ZSH_RC_VERSION
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
