@@ -431,7 +431,7 @@ function tlsCert() {
    trap "rm -f $a" EXIT
    cat >> $a <<EOF
 #!/usr/bin/env ruby
-VERSION="v2.1.1"
+VERSION="v2.1.2"
 args    = ARGV.join(" ")
 count   = -1 
 outarr  = Array.new()
@@ -449,7 +449,7 @@ print "================================\n"
         proc.write(outarr[val])
         proc.close_write
         print "--------------------------------\n" if val > 0
-        print(proc.read)
+        print(proc.readlines.each { |x| x.to_s.gsub!("\n", "")}.join("\n").gsub!("Identifier: \n", "Identifier:").gsub!("Alternative Name: \n", "Alternative Name: ").gsub!("\n\n", "\n") + "\n")
     end
 end
 print "================================\n"
@@ -481,7 +481,7 @@ function zshSetVersion() {
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   export ZSH_RC_VERSION="1.1.1"
+   export ZSH_RC_VERSION="1.1.2"
    debug ZSH_RC_VERSION is $ZSH_RC_VERSION
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
