@@ -66,12 +66,13 @@ debug sudo is set to $sudo
 if [ "$1" = -k ] ; then
   debug docker kill $name
   $dry docker kill $name
-  [ ! -z "$sudo" ] && debug kill %1 && $dry kill %1
+  res=$?
 else
   debug $sudo docker run $rm  $net $name $map $dirmap $container 
   $dry $sudo docker run $rm  $net $name $map $dirmap $container
+  res=$?
 fi
 
-unset name
+exit $res
 
 # eof
