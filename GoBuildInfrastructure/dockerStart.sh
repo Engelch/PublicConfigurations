@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.1.0
+VERSION=0.1.1
 
 function err()          { echo $* 1>&2; } # just write to stderr
 
@@ -26,19 +26,19 @@ done
 
 debug Port mapping: $map
 
-for file in net*  ; do
-  [ $file = 'net_*'  ] && continue
-  net="--net $(echo $file | sed -e 's/^net_//' ) $net"
+for file in net-*  ; do
+  [ $file = 'net-*'  ] && continue
+  net="--net $(echo $file | sed -e 's/^net-//' ) $net"
 done
 
-debug Nets are  $net
+debug Nets are $net
 
 [ -f rm ] && rm='--rm'
 
 debug Remove container is $rm
 
-for file in name_* ; do
-  [ $file = 'name_*'  ] && continue
+for file in name-* ; do
+  [ $file = 'name-*'  ] && continue
   name="--name $(echo $file | sed -e 's/^name_//' ) $name"
 done
 
