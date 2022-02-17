@@ -59,9 +59,10 @@ debug Directory mappings are $dirmap
 for file in _container_* ; do
   [ $file = '_container_*'  ] && continue
   container=$(echo $file | sed -e "s/_container_//" | sed -e "s,_,/,g" ) 
-else
-  container=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z]) # as in dockerBuild
 done
+if [ -z $container ] ; then
+  container=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z]) # as in dockerBuild
+else
 
 debug Container is $container
 
