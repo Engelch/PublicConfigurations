@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# tag docker-images
+# author: engel-ch@outlook.com
+
+VERSION=0.2.0
+
+function soMessage() {
+# always show such a message.  If known terminal, print the message
+# in reverse video mode. This is the other way, not using escape sequences
+
+    if [ "$TERM" = xterm -o "$TERM" = vt100 -o "$TERM" = xterm-256color  -o "$TERM" = screen ] ; then
+        tput smso
+        /bin/echo $* 1>&2
+        tput rmso
+    else
+        /bin/echo $* 1>&2
+    fi
+}
+
+function error() {
+    soMessage 'ERROR:'$*
+}
+
+function errorExit() {
+    if [[ $# -lt 2 ]] ; then
+        error wrong call to to errorExit.
+        exit 222
+    fi
+    EXITCODE=$1 ; shift
+    error $* 1>&2
+    exit $EXITCODE
+}
+
+function err() { echo $* 1>&2; }
+function err4() { echo '    '$* 1>&2; }
+
+function usage() {
+   err USAGE:
+   err4 $(basename $0) docker-registry
+   err4 $(basename $0) # if the docker-registry is specified in $_dockerRegistryFile
+}
+
+#################################
+_dockerRegistryFile=__docker-registry
+
+dry=
+if [ "$1" = -n ] ; then
+    dry=echo >/dev/null
+    shift
+fi
+
+if [ -f $_dockerRegistryFile ] ; then
+    _registry=$(cat $_dockerRegistryFile | grep -v ^$ | grep -v '^#' | head -n1)
+    echo Auto docker registry: $_registry
+else
+    [ -z $1 ] && usage && exit 1
+    _registry=$1
+    echo Docker registry is: $_registry
+fi
+
+_ver=
+if [ -f .version ] ; then
+    _ver=$(cat .version | grep -v '^$' | sed 's/#.*//' )
+fi
+
+name=$(basename $PWD | tr [A-Z] [a-z])
+echo Tagging image $name...
+exit 0
+_imageName=$name
+_date=$(date +%y%m%d)
+_sha=$(docker inspect --format='{{.Id}}' $_imageName)
+_sha=$(echo $_sha | sed 's/:/_/g')
+
+#echo SHA checksum is $_sha
+echo EXECUTING THE COMMANDS...
+
+echo docker tag $_imageName $_registry/$_imageName:latest
+$dry docker tag $_imageName $_registry/$_imageName:latest
+[ ! -z $_ver ] && $dry docker tag $_imageName $_registry/$_imageName:$_ver
+
+echo docker tag $_imageName $_registry/$_imageName:$_date
+$dry docker tag $_imageName $_registry/$_imageName:$_date
+
+echo docker tag $_imageName $_registry/$_imageName:$_date-$_sha
+$dry docker tag $_imageName $_registry/$_imageName:$_date-$_sha
+
+# push the 3 tagged versions
+echo docker push $_registry/$_imageName:latest
+$dry docker push $_registry/$_imageName:latest
+[ ! -z $_ver ] && $dry docker push $_registry/$_imageName:$_ver
+
+echo docker push $_registry/$_imageName:$_date
+$dry docker push $_registry/$_imageName:$_date
+
+echo docker push $_registry/$_imageName:$_date-$_sha
+$dry docker push $_registry/$_imageName:$_date-$_sha
+
+# EOF

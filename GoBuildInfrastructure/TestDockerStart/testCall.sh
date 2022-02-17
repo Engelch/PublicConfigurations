@@ -1,0 +1,1 @@
+../dockerStart.sh -d -n

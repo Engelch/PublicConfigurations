@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.1.1
+VERSION=0.2.0
 
 function err()          { echo $* 1>&2; } # just write to stderr
 
@@ -17,50 +17,53 @@ if [ "$1" = -n ]  ; then # dry-run
  shift
 fi
 [ "$1" = -d ] && shift && debugSet # can be first or second opt
-debug is ON ......................
+debug debug is ON ......................
+debug version is $VERSION
 
-for file in p*:* p*_* ; do
-  [ $file = 'p*:*' -o $file = 'p*_*' ] && continue
-  map="-p$(echo $file | sed -e 's/_/:/'  -e 's/^p//') $map"
+for file in _p*:* _p*_* ; do
+  [ $file = '_p*:*' -o $file = '_p*_*' ] && continue
+  map="-p$(echo $file | sed -e 's/^_p//' | sed -e 's/_/:/') $map"
 done
 
 debug Port mapping: $map
 
-for file in net-*  ; do
-  [ $file = 'net-*'  ] && continue
-  net="--net $(echo $file | sed -e 's/^net-//' ) $net"
+for file in _net_*  ; do
+  [ $file = '_net_*'  ] && continue
+  net="--net $(echo $file | sed -e 's/^_net_//' ) $net"
 done
 
 debug Nets are $net
 
-[ -f rm ] && rm='--rm'
+[ -f --rm -o -f __rm -o -f _rm ] && rm='--rm'
 
 debug Remove container is $rm
 
-for file in name-* ; do
-  [ $file = 'name-*'  ] && continue
-  name="--name $(echo $file | sed -e 's/^name_//' ) $name"
+for file in _name_* ; do
+  [ $file = '_name_*'  ] && continue
+  name="--name $(echo $file | sed -e 's/^_name_//' ) $name"
 done
 
 debug Container name is $name
 
 
-for file in -v* ; do
-  [ $file = '-v*'  ] && continue
-  inmap=$(echo $file | sed 's/^-v//' | sed -e "s,.:,$(pwd):," | sed -e "s,_,/,g" ) 
-  dirmap="-v $inmap  $dirmap"
+for file in _v* ; do
+  [ $file = '_v*'  ] && continue
+  srcmap=$(echo $file | sed 's/^_v//' | sed -e "s,:.*,," | sed "s,_,/,g" | sed -e s",^\.,$(pwd)," )
+  dstmap=$(echo $file | sed 's/^_v//' | sed -e "s,.*:,," | sed "s,_,/,g" ) 
+  debug srcmap $srcmap dstmap $dstmap
+  dirmap="-v $srcmap:$dstmap $dirmap"
 done
 
 debug Directory mappings are $dirmap
 
-for file in container-* ; do
-  [ $file = 'container-*'  ] && continue
-  container=$(echo $file | sed -e "s/container-//" | sed -e "s,_,/,g" ) 
+for file in _container_* ; do
+  [ $file = '_container_*'  ] && continue
+  container=$(echo $file | sed -e "s/_container_//" | sed -e "s,_,/,g" ) 
 done
 
 debug Container is $container
 
-[ -f sudo ] && sudo=sudo 
+[ -f _sudo ] && sudo=sudo 
 debug sudo is set to $sudo
 
 if [ "$1" = -k ] ; then
