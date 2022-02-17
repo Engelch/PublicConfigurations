@@ -62,7 +62,7 @@ for file in _container_* ; do
 done
 if [ -z $container ] ; then
   container=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z]) # as in dockerBuild
-else
+fi
 
 debug Container is $container
 
