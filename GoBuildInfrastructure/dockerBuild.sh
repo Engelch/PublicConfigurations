@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.2.0
+VERSION=0.2.1
 
 # dry-run 
 [ "$1" = -n ] && dry=echo && echo DRY RUN ONLY........................
@@ -16,9 +16,9 @@ fi
 if [ -r .version ] ; then
     version=":"$(cat .version | grep -v '^$' | sed 's/[[:space:]]*#.*$//')
     echo version is $version
-    ver="-t $name$version"
+    ver="-t $container$version"
 fi
-echo Building image "[$VERSION]" $ver $name $name:latest...
-$dry docker build $ver -t $name -t $name:latest .
+echo Building image "[$VERSION]" $ver $container $container:latest...
+$dry docker build $ver -t $container -t $container:latest .
 
 # EOF
