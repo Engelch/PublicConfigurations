@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.2.7
+VERSION=0.3.0
 
 function err()          { echo $* 1>&2; } # just write to stderr
 
@@ -8,7 +8,6 @@ function debugSet()             { DebugFlag=TRUE; return 0; }
 function debugUnset()           { DebugFlag=; return 0; }
 function debugExecIfDebug()     { [ ! -z $DebugFlag ] && $*; }
 function debug()                { [ ! -z $DebugFlag ] && err 'DEBUG:' $* 1>&2 ; return 0; }
-
 
 [ "$1" = -d ] && shift && debugSet
 if [ "$1" = -n ]  ; then # dry-run
@@ -45,7 +44,6 @@ done
 
 debug Container name is $name
 
-
 for file in _v* ; do
   [ $file = '_v*'  ] && continue
   srcmap=$(echo $file | sed 's/^_v//' | sed -e "s,:.*,," | sed "s,_,/,g" | sed -e s",^\.,$(pwd)," )
@@ -74,6 +72,17 @@ if [ "$1" = -k ] ; then
     container=$(echo $name | awk '{ print $2 }' )
     debug docker kill $container
     $dry docker kill $container
+    res=$?
+  else  
+    err ERROR No clear container name.
+    res=1
+  fi
+elif [ "$1" = -e ] ; then
+  # exec mode
+  if [ ! -z "$name" ] ; then
+    container=$(echo $name | awk '{ print $2 }' )
+    debug docker exec -it $container ${Dockershell:-/bin/bash}
+    $dry docker  exec -it $container ${Dockershell:-/bin/bash}
     res=$?
   else  
     err ERROR No clear container name.
