@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.2.4
+VERSION=0.2.6
 
 function err()          { echo $* 1>&2; } # just write to stderr
 
@@ -70,9 +70,15 @@ debug Container is $container
 debug sudo is set to $sudo
 
 if [ "$1" = -k ] ; then
-  debug docker kill $( echo $container )
-  $dry docker kill $( echo $container )
-  res=$?
+  if [ ! -z $name ] ; then
+    container=$(echo $name | awk '{ print $2 }' )
+    debug docker kill $( echo $container )
+    $dry docker kill $( echo $container )
+    res=$?
+  else  
+    err ERROR No clear container name.
+    res=1
+  fi
 else
   debug $sudo docker run $rm  $net $name $map $dirmap $* $container 
   $dry $sudo docker run $rm  $net $name $map $dirmap $* $container
