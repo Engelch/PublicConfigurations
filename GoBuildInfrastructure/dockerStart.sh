@@ -59,6 +59,8 @@ debug Directory mappings are $dirmap
 for file in _container_* ; do
   [ $file = '_container_*'  ] && continue
   container=$(echo $file | sed -e "s/_container_//" | sed -e "s,_,/,g" ) 
+else
+  container=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z]) # as in dockerBuild
 done
 
 debug Container is $container
@@ -71,8 +73,8 @@ if [ "$1" = -k ] ; then
   $dry docker kill $name
   res=$?
 else
-  debug $sudo docker run $rm  $net $name $map $dirmap $container 
-  $dry $sudo docker run $rm  $net $name $map $dirmap $container
+  debug $sudo docker run $rm  $net $name $map $dirmap $* $container 
+  $dry $sudo docker run $rm  $net $name $map $dirmap $* $container
   res=$?
 fi
 
