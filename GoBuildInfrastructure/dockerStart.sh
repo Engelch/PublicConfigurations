@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.2.0
+VERSION=0.2.1
 
 function err()          { echo $* 1>&2; } # just write to stderr
 
@@ -70,8 +70,8 @@ debug Container is $container
 debug sudo is set to $sudo
 
 if [ "$1" = -k ] ; then
-  debug docker kill $name
-  $dry docker kill $name
+  debug docker kill $(echo $_name_* | sed -e 's/^_name_//' )
+  $dry docker kill $(echo $_name_* | sed -e 's/^_name_//' )
   res=$?
 else
   debug $sudo docker run $rm  $net $name $map $dirmap $* $container 
