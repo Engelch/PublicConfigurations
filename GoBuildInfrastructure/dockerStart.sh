@@ -70,7 +70,7 @@ debug Container is $container
 debug sudo is set to $sudo
 
 if [ "$1" = -k ] ; then
-  if [ ! -z $name ] ; then
+  if [ ! -z "$name" ] ; then
     container=$(echo $name | awk '{ print $2 }' )
     debug docker kill $container
     $dry docker kill $container
