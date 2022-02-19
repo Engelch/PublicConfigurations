@@ -259,7 +259,7 @@ function setupOSX() {
    pkgU() # upgrade homebrew, gcloud,  macTeX
    {
       echo homebrew........................................  1>&2
-      brew update && brew upgrade && brew autoremove && brew cleanup # casks are also updated to today's brew upgrade && brew cu -ay # cu := cask upgrade
+      brew update && brew upgrade && brew upgrade --cask --greedy &&  brew autoremove && brew cleanup # casks are also updated to today's brew upgrade && brew cu -ay # cu := cask upgrade
       echo Google Cloud SDK................................  1>&2
       if $(command -v gcloud > /dev/null 2>&1) ;then
          currentGCPSDK=$(gcloud components list 2>&1 | egrep 'Your current Cloud SDK version' | awk '{ print $NF }')
@@ -481,7 +481,7 @@ function zshSetVersion() {
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   export ZSH_RC_VERSION="1.1.2"
+   export ZSH_RC_VERSION="1.1.3"
    debug ZSH_RC_VERSION is $ZSH_RC_VERSION
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
