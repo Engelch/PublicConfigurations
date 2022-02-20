@@ -1,0 +1,231 @@
+#!/usr/bin/env bash
+
+VERSION=1.0.0
+
+function err()          { echo $* 1>&2; } # write to stderr
+function err4()          { echo '    '$* 1>&2; } # write to stderr
+function err8()          { echo '        '$* 1>&2; } # write to stderr
+
+function debugSet()             { DebugFlag=TRUE; return 0; }
+function debugUnset()           { DebugFlag=; return 0; }
+function debugExecIfDebug()     { [ ! -z $DebugFlag ] && $*; }
+function debug()                { [ ! -z $DebugFlag ] && err 'DEBUG:' $* 1>&2 ; return 0; }
+
+case "$1" in
+-d)
+  shift ; debugSet
+  [ "$1"  = -n ] && dry="echo # " && shift
+  ;;
+-n)
+  shift
+  dry="echo # "
+  [ "$1"  = -d ] && debugSet && shift
+  ;;
+-nd | -dn)
+  shift
+  dry="echo # "
+  debugSet
+  ;;
+esac
+
+debug debug is ON ......................
+[ ! -z "$dry" ] && echo DRY MODE is on ..................
+debug Script version is $VERSION
+debug Arguments to scripts are: $*
+
+for file in _p*:* _p*_* ; do
+  [ $file = '_p*:*' -o $file = '_p*_*' ] && continue
+  map="-p$(echo $file | sed -e 's/^_p//' | sed -e 's/_/:/') $map"
+done
+
+debug Port mapping: $map
+
+for file in _net_*  ; do
+  [ $file = '_net_*'  ] && continue
+  net="--net $(echo $file | sed -e 's/^_net_//' ) $net"
+done
+
+debug Nets are $net
+
+[ -f --rm -o -f __rm -o -f _rm ] && rm='--rm'
+
+debug Remove image is $rm
+
+for file in _name_* ; do
+  [ $file = '_name_*'  ] && continue
+  name="--name $(echo $file | sed -e 's/^_name_//' | tr '[A-Z]' '[a-z]') $name"
+done
+
+debug image name is $name
+
+for file in _v* ; do
+  [ $file = '_v*'  ] && continue
+  srcmap=$(echo $file | sed 's/^_v//' | sed -e "s,:.*,," | sed "s,_,/,g" | sed -e s",^\.,$(pwd)," )
+  dstmap=$(echo $file | sed 's/^_v//' | sed -e "s,.*:,," | sed "s,_,/,g" ) 
+  debug srcmap $srcmap dstmap $dstmap
+  dirmap="-v $srcmap:$dstmap $dirmap"
+done
+
+debug Directory mappings are $dirmap
+
+for file in _image_* ; do
+  [ $file = '_image_*'  ] && continue
+  image=$(echo $file | sed -e "s/_image_//" | sed -e "s,_,/,g" | tr [A-Z] [a-z] ) 
+done
+if [ -z $image ] ; then
+  image=$(basename $PWD | sed -e 's/ /_/g' | tr [A-Z] [a-z]) # as in dockerBuild
+fi
+
+debug Image name is $image
+
+[ -f _sudo ] && sudo=sudo 
+debug sudo is set to $sudo
+
+_ver=
+[ -f .version ] && _ver=$(cat .version | grep -v '^$' | sed 's/#.*//' ) && debug _ver is $_ver
+
+_dockerRegistryFile=./docker-registry
+if [ -f $_dockerRegistryFile ] ; then
+  _registry=$(cat $_dockerRegistryFile | grep -v ^$ | grep -v '^#' | head -n1 | sed 's/[[:space:]]#.*//')
+  debug Auto docker registry: $_registry
+elif [ ! -z $DOCKERREGISTRY ] ; then
+  _registry=$DOCKERREGISTRY
+fi 
+
+case "$1" in
+-e | --exec )
+  debug EXEC CASE
+  if [ ! -z "$name" ] ; then
+    shift
+    debug docker exec $* -it $image ${DOCKERSHELL:-/bin/bash}
+    $dry docker  exec $* -it $image ${DOCKERSHELL:-/bin/bash}
+    res=$?
+  else  
+    err ERROR No clear image name.
+    res=1
+  fi
+  ;;
+-r | --run | -- )
+  debug RUN CASE
+  shift # remove argument so that $* b4 supplied to command
+  [ ! -z $_ver ] && ver=:$_ver 
+  debug $sudo docker run $rm  $net $name $map $dirmap $* $image$ver
+  $dry $sudo docker run $rm  $net $name $map $dirmap $* $image$ver
+  res=$?
+  ;;
+-b | --build)
+  debug BUILD case
+  [ ! -z $_ver ] && ver="-t $image:$_ver" && debug version is $image:$_ver
+  debug Building image $ver -t $image:latest .
+  $dry docker build    $ver -t $image:latest .
+  ;;
+-t | --tag )
+  debug TAG CASE, image is $image
+  [ -z "$_registry" ] && err Error, registry not set. && exit 20
+  debug Docker registry is: $_registry
+  _date=$(date +%y%m%d)
+  debug Date is $_date
+  _sha=$(docker inspect --format='{{.Id}}' $image | sed 's/:/_/g')
+  debug SHA checksum is $_sha
+  debug TAG FOR LATEST
+  debug docker tag $image $_registry/$image:latest
+  $dry docker tag $image $_registry/$image:latest
+  if [ ! -z $_ver ] ; then
+    debug TAG FOR '<<version>>'
+    debug docker tag $image $_registry/$image:$_ver
+    $dry docker tag $image $_registry/$image:$_ver
+  fi
+  # debug TAG FOR '<<date>>'
+  # debug docker tag $image $_registry/$image:$_date
+  # $dry docker tag $image $_registry/$image:$_date
+  # debug TAG FOR '<<date-sha>>'
+  # debug docker tag $image $_registry/$image:$_date-$_sha
+  # $dry docker tag $image $_registry/$image:$_date-$_sha
+  debug TAG FOR '<<sha>>'
+  debug docker tag $image $_registry/$image:$_sha
+  $dry docker tag $image $_registry/$image:$_sha
+  ;;
+-p | --push)
+  debug PUSH CASE
+  [ -z $_registry ] && err Error, registry not set. && exit 30
+  debug Docker registry is: $_registry
+  debug docker push $_registry/$image:latest
+  $dry docker push $_registry/$image:latest
+  [ ! -z $_ver ] && $dry docker push $_registry/$image:$_ver
+
+  debug docker push $_registry/$image:$_date
+  $dry docker push $_registry/$image:$_date
+
+  _sha=$(docker inspect --format='{{.Id}}' $image | sed 's/:/_/g')
+  debug SHA checksum is $_sha
+  debug docker push $_registry/$image:$_sha
+  $dry docker push $_registry/$image:$_sha
+  ;;
+-tp | -pt | --pt | --tp | --tag+push )
+  debug TAG+PUSH case
+  shift
+  [ ! -z "$DebugFlag" ] && _debug=-d 
+  [ ! -z "$dry" ] && _dry=-n 
+  $0 $_debug $_dry -t
+  $0 $_debug $_dry -p
+  ;; 
+--sta | --start | --sto | --stop | -k | --kill)
+  debug START case
+  if [ ! -z "$name" ] ; then
+    [ $1 = --sta -o $1 = --start ] && cmd=start
+    [ $1 = --sto -o $1 = --stop ] && cmd=stop
+    [ $1 = -k -o $1 = --kill ] && cmd=kill
+    image=$(echo $name | awk '{ print $2 }' )
+    debug docker $cmd $image
+    $dry docker  $cmd $image
+    res=$?
+  else  
+    err ERROR No clear image name.
+    res=1
+  fi
+  ;;
+-v | --version)
+  debug VERSION case
+  echo $VERSION
+  ;;
+-h | --help | *)
+  debug HELP case
+  err NAME
+  err4 $(basename $0) version is $VERSION
+  err
+  err4 This is a helper application to build, tag, push, run docker 
+  err4 images and to exec into images. Its main idea is to set the main
+  err4 parameters not in a script but to make it visisble immediately by using
+  err4 file names of touch '(aka empty)' files. Furthermore, it uses the current
+  err4 directory as the default for the docker name. So it is possible to replicate
+  err4 a complete directory of this kind and  give it a new name. This new
+  err4 configuration does not interfere with the old one.
+  err
+  err4 This command is main thought for development environments where is shall be
+  err4 easily visisble how an application was started. 
+  err
+  err SYNOPSIS
+  err4 '-d # debug, can be combined with all options below, -dn also supported'
+  err4 '-n # dry run, can be combined with all options below, -nd also supported'
+  echo '    '$(basename $0) '[ -v | --version ]     # show version number' 1>&2
+  echo '    '$(basename $0) '[ -h | --help ]        # show this help' 1>&2
+  echo '    '$(basename $0) '( -b | --build ) ...   # build image, further arguments' 1>&2
+  echo '                                   # supplied to docker build' 1>&2
+  echo '    '$(basename $0) '( -r | --run ) ...     # run image, further arguments' 1>&2
+  echo '                                   # supplied to docker run' 1>&2
+  echo '    '$(basename $0) '( -k | --kill )        # kill image, further arguments' 1>&2
+  echo '                                   # supplied to docker run' 1>&2
+  echo '    '$(basename $0) '( -e | --exec ) ...    # exec into image, further' 1>&2
+  echo '                                   # arguments supplied to docker run' 1>&2
+  echo '    '$(basename $0) '( -t | --tag | -p | --push )' 1>&2
+  echo '                                   # tag und push image' 1>&2 
+  echo '    '$(basename $0) '( -tp | -pt | --tag+push )' 1>&2
+  echo '                                   # exec tag und push' 1>&2 
+  echo '    '$(basename $0) '( --sta | --start )    # exec into image' 1>&2
+  echo '    '$(basename $0) '( --sto | --stop )     # exec into image' 1>&2
+  ;;
+esac
+
+exit $res
+
+# eof
