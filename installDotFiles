@@ -152,8 +152,8 @@ function main() {
     exitIfBinariesNotFound pwd tput basename dirname mktemp
     parseCLI $* ; args=$parseCLI_result # args=$(parseCLI $*) creates a subshell and cannot set current shell debugFlag...
     debug args are $args
-    cd  # jump to home directory
-    for file in $_appDir/dot* ; do
+    cd  # jump to home directory, always install dot-files towards HOME directory
+    for file in $_absoluteAppDir/dot* ; do
         _nameWithoutDot=$(basename $file | sed 's/^dot//')
         ln -sfv $file $_nameWithoutDot
     done
