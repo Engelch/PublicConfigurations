@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=1.0.1
+VERSION=1.0.2
 
 function err()          { echo $* 1>&2; } # write to stderr
 function err4()          { echo '    '$* 1>&2; } # write to stderr
@@ -97,8 +97,9 @@ case "$1" in
   debug EXEC CASE
   if [ ! -z "$name" ] ; then
     shift
-    debug docker exec $* -it $name ${DOCKERSHELL:-/bin/bash}
-    $dry docker  exec $* -it $name ${DOCKERSHELL:-/bin/bash}
+    purename=$(echo $name | awk '{ print $2 }' )
+    debug docker exec $* -it $purename ${DOCKERSHELL:-/bin/bash}
+    $dry docker  exec $* -it $purename ${DOCKERSHELL:-/bin/bash}
     res=$?
   else  
     err ERROR No clear image name.
