@@ -431,7 +431,7 @@ function tlsCert() {
    trap "rm -f $a" EXIT
    cat >> $a <<EOF
 #!/usr/bin/env ruby
-VERSION="v2.1.2"
+VERSION="v2.1.23"
 args    = ARGV.join(" ")
 count   = -1 
 outarr  = Array.new()
@@ -446,10 +446,16 @@ print "Number of certificates (#{VERSION}): ", count+1, "\n"
 print "================================\n"
 (count+1).times do |val|
     IO.popen("openssl x509 -in - -subject -email -issuer -dates -sha256 -serial -noout -ext 'subjectAltName,authorityKeyIdentifier,subjectKeyIdentifier' 2>/dev/null", "w+") do |proc|
-        proc.write(outarr[val])
-        proc.close_write
-        print "--------------------------------\n" if val > 0
-        print(proc.readlines.each { |x| x.to_s.gsub!("\n", "")}.join("\n").gsub!("Identifier: \n", "Identifier:").gsub!("Alternative Name: \n", "Alternative Name: ").gsub!("\n\n", "\n") + "\n")
+         proc.write(outarr[val])
+         proc.close_write
+         puts "--------------------------------" if val > 0
+        
+         proc.readlines.each { |x| 
+            if x.length > 1 
+               print (x.to_s.gsub("\n", ""))
+               print ("\n") if not [ "Identifier", "Alternative Name" ].any?{ |s| x.include? s } 
+            end
+         }
     end
 end
 print "================================\n"
