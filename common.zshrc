@@ -630,7 +630,8 @@ function main() {
          [ -z $NO_loadPost ]             && loadSource post
          NEWLINE=$'\n'
          if [ -z $NO_ownPrompt ] ; then
-            PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • $fg[yellow]$(gitContents)$reset_color • $fg[red]$AWS_PROFILE$reset_color • %{$fg[cyan]%}%c%{$reset_color%}${NEWLINE}'
+            setopt PROMPT_SUBST
+            PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
             RPROMPT=
          fi
          bindkey '^R' history-incremental-search-backward
