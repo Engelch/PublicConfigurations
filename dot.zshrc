@@ -122,6 +122,9 @@ PROFILES_CONFIG_DIR=$(cd; cd $PROFILES_CONFIG_DIR; /bin/pwd) # assure it is an a
 
 debug PROFILES_CONFIG_DIR: $PROFILES_CONFIG_DIR
 
+# group mode
+umask 002
+
 # potentially reread .zshenv, but required as oh-my-zsh seems to destroy the PATH variable.
 # Optimised just to reread the cached path file
 
