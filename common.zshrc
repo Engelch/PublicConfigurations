@@ -616,7 +616,7 @@ function setupOSSpecifics() { # OS specific settings and functions
 }
 
 function main() {
-   umask 0022
+   umask 002 # umask for group work
    loadSource pre
    case $- in
       *i*) #  "This shell is interactive"
