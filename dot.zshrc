@@ -194,22 +194,10 @@ function execHelp() {
     build/${__env}/${__os}_${__arch}/${__app} $*
 }
 
-if [ -z $_goPathCheck ] ; then
-    _goPathCheck=yes
-    _p=$(ls $HOME/sdk/ 2>/dev/null | tail -n 1)
-    [ -d $HOME/sdk/$_p/bin ] && echo local go in $HOME/sdk/$_p/bin exists && PATH=$HOME/sdk/$_p/bin:$PATH
-    unset _p
-fi
-
-local _go_helpers=$PROFILES_CONFIG_DIR/go.profile.post
-[ ! -r $_go_helpers  ] && echo WARNING: cannot find $_go_helpers 1>&2
-[ -r $_go_helpers ] && source $_go_helpers # && echo loaded go helpers
-
 if [ -z $EXTRA_PATH_DONE ] ; then   # only add the PATH once (or unset this variable)
-    local EXTRA_PRE_PATH=~/sdk/go1.17.3/bin # check for all these directories
-    for _path in $EXTRA_PRE_PATH ; do
-        [ -d "$_path" ] && PATH="$_path":"$PATH" && export EXTRA_PATH_DONE=true
-    done
+    local EXTRA_PRE_PATH=$(ls -1 ~/sdk/ 2>/dev/null | tail -n 1) # check for all these directories
+    [ ! -z "$EXTRA_PRE_PATH" ] &&  PATH="~/sdk/$EXTRA_PRE_PATH/bin":"$PATH" && export EXTRA_PATH_DONE=true && debug GO set to $EXTRA_PRE_PATH
+    unset EXTRA_PRE_PATH
 fi
 return 0
 

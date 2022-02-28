@@ -57,18 +57,19 @@ if [ ! -f "$PATHFILE" ] ; then
     [ $UID = 0 ] && debug4 root PATH initialisation &&  PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
     [ $UID != 0 ] && debug4 normal user PATH init &&    PATH=/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
     for _POTENTIAL_DIR in \
-        /opt/homebrew/bin /opt/homebrew/opt/gnu-getopt/bin /usr/local/opt/gnu-getopt/bin /opt/homebrew/opt/ \
-        /opt/homebrew/opt/openssl\@1.1/bin /usr/local/opt/openssl\@1.1/bin \
-        /opt/homebrew/opt/curl/bin  /usr/local/opt/curl/bin/ /usr/local/opt/gnu-getopt/bin \
-        /opt/homebrew/opt/java/bin /usr/local/opt/java/bin /Library/Java/JavaVirtualMachines/current/bin \
-        /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin \
         $HOME/go/bin \
         $HOME/Library/Android/sdk/platform-tools /usr/local/share/dotnet /usr/local/go/bin \
-        /Applications/Visual\ Studio\ Code.app//Contents/Resources/app/bin/ \
-        /Applications/Sublime\ Text.app/Contents/MacOS/ $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
+        $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
         /usr/local/google-cloud-sdk/ $HOME/google-cloud-sdk/ $HOME/.pub-cache/bin /opt/flutter/bin \
         $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin /usr/local/google-cloud-sdk/bin \
-        /opt/android-studio/bin /mnt/c/Windows/System32 /mnt/c/Windows /mnt/c/Windows/System32/wbem \
+        /opt/android-studio/bin
+    do
+        debug4 checking for dir $_POTENTIAL_DIR
+        [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
+    done
+    # only check for WSL
+    [ -d /mnt/c/ ] && for _POTENTIAL_DIR in \
+         /mnt/c/Windows/System32 /mnt/c/Windows /mnt/c/Windows/System32/wbem \
         /mnt/c/Windows/System32/WindowsPowerShell/v1.0 /mnt/c/Users/$USER/AppData/Local/Microsoft/WindowsApps \
         /mnt/c/go/bin /mnt/c/Program\ Files/Microsoft\ VS\ Code/bin \
         /mnt/c/Program\ Files/dotnet/ /mnt/c/Program\ Files/Haskell\ Platform/actual/bin \
@@ -82,12 +83,13 @@ if [ ! -f "$PATHFILE" ] ; then
         debug4 checking for dir $_POTENTIAL_DIR
         [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
     done
+    [ $(uname) = Darwin ] && [ -f "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" && setupOSXPaths
 
+    debug4 latex bins....
     _latex=$(find /usr/local/texlive -maxdepth 4 -name universal-darwin &>/dev/null | sort | tail -n1)
     [ ! -z $_latex ] && PATH=$PATH:$_latex
-    setopt +o nomatch # By default, if a command line contains a globbing expression which doesn't match anything, Zsh will print the error message you're seeing, and not run the command at all. 
-    _jdk=$(find /mnt/c/Program\ Files/Java/jdk* -maxdepth 2 -name bin &>/dev/null | sort -n | tail -n1)
-    setopt -o nomatch
+     # +o nomatch ::= by default, if a command line contains a globbing expression which doesn't match anything, Zsh will print the error message you're seeing, and not run the command at all. 
+    [ -d /mnt/c/ ] && debug4 latex bins WSL..... && _jdk=$(setopt +o nomatch; find /mnt/c/Program\ Files/Java/jdk* -maxdepth 2 -name bin &>/dev/null | sort -n | tail -n1)
     [ ! -z $_jdk ] && PATH=$PATH:$_jdk
 
     if $(which latex > /dev/null); then
@@ -98,13 +100,14 @@ if [ ! -f "$PATHFILE" ] ; then
         if [ -d "$TEXBASEDIR" -a ! -f "$TEXPATHFILE" ] ; then
         echo creating TEXPATHFILE $TEXPATHFILE...
         # determine current distribution (just for a century :-)
-        TEX_DISTRIB_DIR=$(find /usr/local/texlive -type d -mindepth 1 -maxdepth 1 | grep /20)
-        debug8 TEX_DISTRIB_DIR is $TEX_DISTRIB_DIR
+        TEX_DISTRIB_DIR=$(find /usr/local/texlive -type d -mindepth 1 -maxdepth 1 | grep /20 | tail -n 1)
+        debug4 TEX_DISTRIB_DIR is $TEX_DISTRIB_DIR
         # determine non-annual TeX-directories (not required at the moment)
         # TEX_OTHER_DIRS=$(ls -d1 /usr/local/texlive/* | egrep -v '.*20[[:digit:]][[:digit:]]')
         _os=$(uname | tr '[A-Z]' '[a-z]')
-        find "$TEX_DISTRIB_DIR" -type d -name 'bin' | egrep '/bin$'  >| $TEXPATHFILE
-        find "$TEX_DISTRIB_DIR" -type d -name "\*$_os"   >> $TEXPATHFILE
+        # limit depth for speed purposes
+        find "$TEX_DISTRIB_DIR" -type d -maxdepth 4 -name 'bin' | egrep '/bin$'  >| $TEXPATHFILE
+        find "$TEX_DISTRIB_DIR" -type d -maxdepth 4 -name "\*$_os"   >> $TEXPATHFILE
         fi
         if [ -f "$TEXPATHFILE" ] ; then
         for _line in $(egrep -v '^[[:space:]]*$' $TEXPATHFILE) ; do
