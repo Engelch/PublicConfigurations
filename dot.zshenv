@@ -51,6 +51,13 @@ function errorExit()    { val=$1 ; shift ; error $* ; exit $val ; }
 
 # debugSet
 
+# user-specific pre/post/... configuration
+function loadSource() {
+   if [ -r "$HOME/.zshrc.$1" ] ; then debug loadSource .zshrc.$1 ; source "$HOME/.zshrc.$1" ; else 
+      debug loadSource FILE NOT FOUND $HOME/.zshrc.$1 
+   fi
+}
+
 export PATHFILE="$HOME/.zsh.profile.path"
 if [ ! -f "$PATHFILE" ] ; then
     debug PATHFILE $PATHFILE not found, creating it...

@@ -68,13 +68,6 @@ function rlFull() {
    debugUnset
 }
 
-# user-specific pre/post/... configuration
-function loadSource() {
-   if [ -r "$HOME/.zshrc.$1" ] ; then debug loadSource .zshrc.$1 ; source "$HOME/.zshrc.$1" ; else 
-      debug loadSource FILE NOT FOUND $HOME/.zshrc.$1 
-   fi
-}
-
 # If multiple users log in as user hadm, determine the real user logging in by identifying her/his SSH finger-print
 function realUserForHadm() {
    debug common.zshrc in realUserForHadm
