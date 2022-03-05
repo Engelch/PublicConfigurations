@@ -94,33 +94,4 @@ function realUserForHadm() {
    fi
 }
 
-function main() {
-   umask 002 # umask for group work
-   loadSource pre
-   case $- in
-      *i*) #  "This shell is interactive"
-         [ -z $NO_zshSetVersion ]        && [ -f "$PROFILES_CONFIG_DIR/zsh.version.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.version.sh" && zshSetVersion
-         [ -z $NO_zshShellAliases ]      && [ -f "$PROFILES_CONFIG_DIR/zsh.aliases.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.aliases.sh" && zshShellAliases
-         [ -z $NO_setupGit ]             && [ -f "$PROFILES_CONFIG_DIR/zsh.git.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.git.sh" && setupGit
-         [ -z $NO_setupK8s ]             && [ -f "$PROFILES_CONFIG_DIR/zsh.k8s.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.k8s.sh" && setupK8s
-         [ -z $NO_setupOSSpecifics ]     && [ -f "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" && setupOSSpecifics
-         [ -z $NO_setupCrypto ]          && [ -f "$PROFILES_CONFIG_DIR/zsh.crypto.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.crypto.sh"
-         [ -z $NO_sshSetup ]             && sshSetup     # part of zsh.crypto.sh
-         [ -z $NO_realUserForHadm ]      && realUserForHadm
-         [ -z $NO_loadPost ]             && loadSource post
-         NEWLINE=$'\n'
-         if [ -z $NO_ownPrompt ] ; then
-            setopt PROMPT_SUBST
-            PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
-            RPROMPT=
-         fi
-         bindkey '^R' history-incremental-search-backward
-         ;;
-      *) #echo "This is a script";;
-         [ -z $NO_loadPost ]             && loadPost
-         ;;
-   esac
-}
-
-main $@
 # EOF

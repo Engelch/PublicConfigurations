@@ -83,7 +83,13 @@ if [ ! -f "$PATHFILE" ] ; then
         debug4 checking for dir $_POTENTIAL_DIR
         [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
     done
-    [ $(uname) = Darwin ] && [ -f "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" ] && source "$PROFILES_CONFIG_DIR/zsh.os-specific.sh" && setupOSXPaths
+    [ $(uname) = Darwin ] && \
+    if [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" ] ; then
+        source "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" 
+        setupOSXPaths
+    else
+        err CANNOT find zsh.os-specific.sh //////////////////////////////////////////
+    fi
 
     debug4 latex bins....
     _latex=$(find /usr/local/texlive -maxdepth 4 -name universal-darwin &>/dev/null | sort | tail -n1)
