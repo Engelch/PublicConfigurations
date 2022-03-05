@@ -169,7 +169,7 @@
 	<data>
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwVFlUkbnVsbNQNDg8QERIT
-	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNAMgAAAAAAABAQgAKAA18QHE1l
+	FFZOU1NpemVYTlNmRmxhZ3NWTlNOYW1lViRjbGFzcyNANgAAAAAAABAQgAKAA18QHE1l
 	c2xvTEdMRm9yUG93ZXJsaW5lLVJlZ3VsYXLSFxgZGlokY2xhc3NuYW1lWCRjbGFzc2Vz
 	Vk5TRm9udKIZG1hOU09iamVjdAgRGiQpMjdJTFFTWF5nbnd+hY6QkpSzuMPM09YAAAAA
 	AAABAQAAAAAAAAAcAAAAAAAAAAAAAAAAAAAA3w==
@@ -208,6 +208,8 @@
 	<string>30 red HaX0R_R3D</string>
 	<key>rowCount</key>
 	<integer>50</integer>
+	<key>shellExitAction</key>
+	<integer>1</integer>
 	<key>type</key>
 	<string>Window Settings</string>
 	<key>useOptionAsMetaKey</key>
