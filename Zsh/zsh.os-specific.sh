@@ -1,6 +1,6 @@
 debug LOADING zsh.os-specific.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[ ! -z $NO_os-specific ] && debug exiting zsh.os-specific.sh && return 
+[ ! -z $NO_os_specific ] && debug exiting zsh.os-specific.sh && return 
 
 function setupOSSpecifics() { # OS specific settings and functions
    case $(uname) in

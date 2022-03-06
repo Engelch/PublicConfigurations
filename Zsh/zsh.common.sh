@@ -1,3 +1,6 @@
+debug LOADING zsh.common.sh '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+
+
 #setopt autocd                   #  
 #setopt NO_CASE_GLOB
 setopt EXTENDED_HISTORY
