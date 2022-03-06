@@ -68,7 +68,9 @@ if [ ! -f "$PATHFILE" ] ; then
         $HOME/Library/Android/sdk/platform-tools /usr/local/share/dotnet /usr/local/go/bin \
         $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
         /usr/local/google-cloud-sdk/ $HOME/google-cloud-sdk/ $HOME/.pub-cache/bin /opt/flutter/bin \
-        $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin /usr/local/google-cloud-sdk/bin \
+        $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin \
+        /opt/PublicConfigurations/bin o$HOME/PublicConfigurations/bin \
+        /usr/local/google-cloud-sdk/bin \
         /opt/android-studio/bin
     do
         debug4 checking for dir $_POTENTIAL_DIR
