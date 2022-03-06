@@ -1,5 +1,7 @@
 debug LOADING zsh.k8s.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[ ! -z $NO_zshK8s ] && debug exiting zsh.k8s.sh && return 
+
 # ---- k8s -----------------------------------------------------------------------
 
 # Kubernetes-specific aliases and functions

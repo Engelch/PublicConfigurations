@@ -121,6 +121,12 @@ debug appVersion     $_appVersion
 debug goarm          $_goarm
 debug upx            $_upx
 
+# compiler aka host-architecture
+declare -r _hostarch=$(uname -m | tr "A-Z" "a-z" | sed 's/x86_64/amd64/')
+declare -r _hostostype=$(uname | tr "A-Z" "a-z")
+debug _hostarch     $_hostarch
+debug _hostostyp    $_hostostype
+
 debug Press ENTER to continue or ctrl-C to exit.
 debugExecIfDebug read
 
@@ -133,7 +139,9 @@ debugExecIfDebug read
 
 echo env GOARCH=${_osArch} GOOS=${_osType} ${_goarm} go build ${_ldFlags} -o ${_outputDir}/${_appName}-${_appVersion}${_upx}
 env GOARCH=${_osArch} GOOS=${_osType} ${_goarm} go build ${_ldFlags} -o ${_outputDir}/${_appName}-${_appVersion}${_upx}
-[ "$_releaseType" = release -o "$_releaseType" = upx ] && echo stripping binary && strip ${_outputDir}/${_appName}-${_appVersion}${_upx}
+# strip only if building for the same host as we are compiling on
+[ $_hostarch = $_osArch -a $_osType = $_hostostype ] && \
+  [ "$_releaseType" = release -o "$_releaseType" = upx ] && echo stripping binary && strip ${_outputDir}/${_appName}-${_appVersion}${_upx}
 [ ! -z ${_upx} ] && echo upx ${_outputDir}/${_appName}-${_appVersion}${_upx} && upx ${_outputDir}/${_appName}-${_appVersion}${_upx}
 ln -fs ${_appName}-${_appVersion}${_upx} ${_outputDir}/${_appName}
 

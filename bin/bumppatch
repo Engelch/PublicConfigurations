@@ -69,7 +69,7 @@ function tempDir()                      { mktemp -d "${TMPDIR:-/tmp/}$_app.YYYYY
 
 declare -r _version="0.2.0"
 declare -r _appDir=$(cd $(dirname $0); /bin/pwd)
-CMD=$(basename $0)
+CMD=$(basename $0 | sed 's/^bump//')
 
 [ "$1" = -d ] && shift && debugSet
 [ "$1" = -n ] && shift && dry=echo

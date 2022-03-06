@@ -57,11 +57,12 @@ _arch=$(uname -m | tr "A-Z" "a-z")
 [ "$_arch" = x86_64 ] && _arch=amd64
 declare -r _appDir=$(dirname $0)
 declare -r _app=$(basename $0)
+declare -r _env=$(echo $_app | sed 's/^go//')
 
 echo AppDir is $_appDir
 echo OS is $_os
 echo Architecture is $_arch
-echo Calling ${_appDir}/gobuild.${_app}.${_os}_${_arch}
-${_appDir}/gobuild.${_app}.${_os}_${_arch} $@
+echo Calling ${_appDir}/gobuild.${_env}.${_os}_${_arch}
+${_appDir}/gobuild.${_env}.${_os}_${_arch} $@
 
 # EOF

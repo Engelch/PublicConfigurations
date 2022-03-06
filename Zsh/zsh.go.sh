@@ -1,5 +1,9 @@
 # go support --2110
 
+debug LOADING zsh.go.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[ ! -z $NO_zshGo ] && debug exiting zsh.go.sh && return 
+
 alias gopd="bin/bumppatch ; bin/godebug"
 alias gomi="gomid"
 alias gomid="bin/bumpminor ; bin/godebug"
@@ -12,6 +16,10 @@ alias gor=bin/release
 alias gode='execHelp debug $*'
 alias gore='execHelp release $*'
 alias goue='execHelp upx $*'
+
+alias bpa=bin/bumppatch
+alias bmi=bin/bumpminor
+alias bma=bin/bumpmajor
 
 if [ -z $_goPathCheck ] ; then
     _goPathCheck=yes

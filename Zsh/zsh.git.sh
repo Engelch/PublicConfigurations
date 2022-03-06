@@ -1,5 +1,7 @@
 debug LOADING zsh.git.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[ ! -z $NO_zshGit ] && debug exiting zsh.git.sh && return 
+
 # ---- GIT  -----------------------------------------------------------------------
 
 # gitContents: helper for PS1: git bash prompt like, but much shorter and also working for darwin.

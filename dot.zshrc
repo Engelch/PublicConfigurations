@@ -128,7 +128,7 @@ function main() {
    # potentially reread .zshenv, but required as oh-my-zsh seems to destroy the PATH variable.
     # Optimised just to reread the cached path file
 
-    for files in $PATHFILE $PROFILES_CONFIG_DIR/Zsh/*.common.sh; do
+    for files in $PATHFILE $PROFILES_CONFIG_DIR/Zsh/zsh.*.sh; do
         if [ -f $files ] ; then
             debug .zshrc sourcing $files
             source $files
@@ -138,14 +138,6 @@ function main() {
     done 
     case $- in
         *i*) #  "This shell is interactive"
-            [ -z $NO_zshSetVersion ]        && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.version.sh" ]     && source "$PROFILES_CONFIG_DIR/Zsh/zsh.version.sh" && zshSetVersion
-            [ -z $NO_zshShellAliases ]      && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.aliases.sh" ]     && source "$PROFILES_CONFIG_DIR/Zsh/zsh.aliases.sh" && zshShellAliases
-            [ -z $NO_setupGit ]             && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.git.sh" ]         && source "$PROFILES_CONFIG_DIR/Zsh/zsh.git.sh" && setupGit
-            [ -z $NO_setupK8s ]             && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.k8s.sh" ]         && source "$PROFILES_CONFIG_DIR/Zsh/zsh.k8s.sh" && setupK8s
-            [ -z $NO_setupOSSpecifics ]     && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" ] && source "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" && setupOSSpecifics
-            [ -z $NO_setupCrypto ]          && [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.crypto.sh" ]      && source "$PROFILES_CONFIG_DIR/Zsh/zsh.crypto.sh"
-            [ -z $NO_sshSetup ]             && sshSetup     # part of zsh.crypto.sh
-            [ -z $NO_realUserForHadm ]      && realUserForHadm
             [ -z $NO_loadPost ]             && loadSource post
             NEWLINE=$'\n'
             if [ -z $NO_ownPrompt ] ; then

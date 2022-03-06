@@ -1,5 +1,7 @@
 debug LOADING zsh.aliases.sh '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 
+[ ! -z $NO_zshAliases ] && debug exiting zsh.aliases.sh && return 
+
 # set all the aliases for the shell    # OS independent setup
 function zshShellAliases() {
    CDPATH=.:~

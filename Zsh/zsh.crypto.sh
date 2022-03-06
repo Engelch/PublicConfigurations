@@ -1,5 +1,7 @@
 debug LOADING zsh.crypto.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[ ! -z $NO_zshCrypto ] && debug exiting zsh.crypto.sh && return 
+
 # ---- Crypto -----------------------------------------------------------------------
 
 # These routines delete the original file. By default, they do not overwrite existing files. This can be changed by supplying the argument `-f`.
