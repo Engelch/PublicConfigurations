@@ -10,8 +10,8 @@ alias gomid="bin/bumpminor ; bin/godebug"
 alias goma="gomid"
 alias gomad="bin/bumpmajor ; bin/godebug"
 
-alias god=bin/debug
-alias gor=bin/release
+alias god=bin/godebug
+alias gor=bin/gorelease
 
 alias gode='execHelp debug $*'
 alias gore='execHelp release $*'

@@ -130,6 +130,8 @@ debug _hostostyp    $_hostostype
 debug Press ENTER to continue or ctrl-C to exit.
 debugExecIfDebug read
 
+[ $_releaseType = upx ] && exitIfBinariesNotFound upx
+
 #### if required create the output directory and jump into it
 [ ! -d ${_outputDir} ] && mkdir -p ${_outputDir}
 # cd ${_outputDir}
