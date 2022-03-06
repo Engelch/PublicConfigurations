@@ -138,7 +138,6 @@ function main() {
     done 
     case $- in
         *i*) #  "This shell is interactive"
-            [ -z $NO_loadPost ]             && loadSource post
             NEWLINE=$'\n'
             if [ -z $NO_ownPrompt ] ; then
                 setopt PROMPT_SUBST
@@ -147,9 +146,9 @@ function main() {
             fi
             bindkey '^R' history-incremental-search-backwarda
             realUserForHadm
+            [ -z $NO_loadPost ]             && loadSource post
             ;;
         *) #echo "This is a script";;
-            [ -z $NO_loadPost ]             && loadPost
             ;;
     esac
 }
