@@ -145,7 +145,8 @@ function main() {
                 PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
                 RPROMPT=
             fi
-            bindkey '^R' history-incremental-search-backward
+            bindkey '^R' history-incremental-search-backwarda
+            realUserForHadm
             ;;
         *) #echo "This is a script";;
             [ -z $NO_loadPost ]             && loadPost
