@@ -1,16 +1,17 @@
 # go support --2110
 
-alias bp="bin/patch ; bin/debug"
-alias bm="bmi"
-alias bmi="bin/minor ; bin/debug"
-alias bma="bin/major ; bin/debug"
+alias gopd="bin/bumppatch ; bin/godebug"
+alias gomi="gomid"
+alias gomid="bin/bumpminor ; bin/godebug"
+alias goma="gomid"
+alias gomad="bin/bumpmajor ; bin/godebug"
 
-alias bd=bin/debug
-alias br=bin/release
+alias god=bin/debug
+alias gor=bin/release
 
-alias bde='execHelp debug $*'
-alias bre='execHelp release $*'
-alias bue='execHelp upx $*'
+alias gode='execHelp debug $*'
+alias gore='execHelp release $*'
+alias goue='execHelp upx $*'
 
 if [ -z $_goPathCheck ] ; then
     _goPathCheck=yes
