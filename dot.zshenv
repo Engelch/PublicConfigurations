@@ -62,7 +62,7 @@ export PATHFILE="$HOME/.zsh.profile.path"
 if [ ! -f "$PATHFILE" ] ; then
     debug PATHFILE $PATHFILE not found, creating it...
     [ $UID = 0 ] && debug4 root PATH initialisation &&  PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
-    [ $UID != 0 ] && debug4 normal user PATH init &&    PATH=/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
+    [ $UID != 0 ] && debug4 normal user PATH init &&    PATH=./bin:/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
     for _POTENTIAL_DIR in \
         $HOME/go/bin \
         $HOME/Library/Android/sdk/platform-tools /usr/local/share/dotnet /usr/local/go/bin \
