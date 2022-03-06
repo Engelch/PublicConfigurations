@@ -2,22 +2,6 @@ debug LOADING zsh.os-specific.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [ ! -z $NO_os_specific ] && debug exiting zsh.os-specific.sh && return 
 
-function setupOSSpecifics() { # OS specific settings and functions
-   case $(uname) in
-   Linux)
-      [ -z $NO_setupLinux ] && setupLinux ;;
-   Darwin)
-      [ -z $NO_setupOSX ] && setupOSX
-      [ -z $NO_setupOSX_PostgreSQL ] && setupOSX_PostgreSQL
-      #  [ -z $NO_setupOSX_MonoDotNet ] && setupOSX_MonoDotNet
-      ;;
-   *BSD)
-      [ -z $NO_setupBSD ] && setupBSD ;;
-   *)
-      echo WARNING: No OS-specfic settings found.
-   esac
-}
-
 # ---- Linux -----------------------------------------------------------------------
 
 function setupLinux() {          # Linux-specific settings of aliases and shell-functions
@@ -161,5 +145,23 @@ function setupBSD() {
    alias xlock='xlock -remote -mode blank -allowroot'
    alias xl=xlock
 }
+
+function setupOSSpecifics() { # OS specific settings and functions
+   case $(uname) in
+   Linux)
+      [ -z $NO_setupLinux ] && setupLinux ;;
+   Darwin)
+      [ -z $NO_setupOSX ] && setupOSX
+      [ -z $NO_setupOSX_PostgreSQL ] && setupOSX_PostgreSQL
+      #  [ -z $NO_setupOSX_MonoDotNet ] && setupOSX_MonoDotNet
+      ;;
+   *BSD)
+      [ -z $NO_setupBSD ] && setupBSD ;;
+   *)
+      echo WARNING: No OS-specfic settings found.
+   esac
+}
+
+setupOSSpecifics
 
 # EOF
