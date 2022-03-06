@@ -46,4 +46,6 @@ function gihelp() {
     echo 'function gipua() { for remoterepo in $(grep "^\[remote" $(git rev-parse --show-toplevel)/.git/config | sed -e "s/.remote \"//" -e s"/..$//") ; do git push --all $remoterepo ; git push --tags $* ; done ; }'
 }
 
+setupGit
+
 # EOF
