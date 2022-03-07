@@ -19,8 +19,8 @@ if [ "$1" = -h -o "$1" = --help ] ; then
 fi
 
 appDir=$(dirname $0)
-cd "$appDir"
-[ $(pwd | xargs basename) = bin ] && cd .. # correct location if binary in bin
+#cd "$appDir"
+#[ $(pwd | xargs basename) = bin ] && cd .. # correct location if binary in bin
 
 if [ -f "./versionFilePattern" ] ; then
    # _versionFilePattern can either contain specific filenames to search for version information or a pattern

@@ -69,7 +69,7 @@ if [ ! -f "$PATHFILE" ] ; then
         $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
         /usr/local/google-cloud-sdk/ $HOME/google-cloud-sdk/ $HOME/.pub-cache/bin /opt/flutter/bin \
         $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin \
-        /opt/PublicConfigurations/bin o$HOME/PublicConfigurations/bin \
+        /opt/PublicConfigurations/bin $HOME/PublicConfigurations/bin \
         /usr/local/google-cloud-sdk/bin \
         /opt/android-studio/bin
     do

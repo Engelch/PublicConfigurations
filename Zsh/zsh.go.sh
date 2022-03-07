@@ -4,22 +4,22 @@ debug LOADING zsh.go.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [ ! -z $NO_zshGo ] && debug exiting zsh.go.sh && return 
 
-alias gopd="bin/bumppatch ; bin/godebug"
+alias gopd="bumppatch ; godebug"
 alias gomi="gomid"
-alias gomid="bin/bumpminor ; bin/godebug"
+alias gomid="bumpminor ; godebug"
 alias goma="gomid"
-alias gomad="bin/bumpmajor ; bin/godebug"
+alias gomad="bumpmajor ; godebug"
 
-alias god=bin/godebug
-alias gor=bin/gorelease
+alias god=godebug
+alias gor=gorelease
 
 alias gode='execHelp debug $*'
 alias gore='execHelp release $*'
 alias goue='execHelp upx $*'
 
-alias bpa=bin/bumppatch
-alias bmi=bin/bumpminor
-alias bma=bin/bumpmajor
+alias bpa=bumppatch
+alias bmi=bumpminor
+alias bma=bumpmajor
 
 if [ -z $_goPathCheck ] ; then
     _goPathCheck=yes
