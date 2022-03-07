@@ -119,98 +119,41 @@ fi
 
 export PROFILES_CONFIG_DIR=$(ls -l $HOME/.zshrc | awk '{ print $NF }' | xargs dirname)
 PROFILES_CONFIG_DIR=$(cd; cd $PROFILES_CONFIG_DIR; /bin/pwd) # assure it is an absolute path
-
 debug PROFILES_CONFIG_DIR: $PROFILES_CONFIG_DIR
 
-# potentially reread .zshenv, but required as oh-my-zsh seems to destroy the PATH variable.
-# Optimised just to reread the cached path file
+function main() {
+    local files
+   umask 002 # umask for group work
+   loadSource pre
+   # potentially reread .zshenv, but required as oh-my-zsh seems to destroy the PATH variable.
+    # Optimised just to reread the cached path file
 
-for files in $PATHFILE $PROFILES_CONFIG_DIR/common.zshrc ; do
-    if [ -f $files ] ; then
-        debug .zshrc sourcing $files
-        source $files
-    else
-        echo WARNING: cannot find $files 1>&2
-    fi 
-done 
-unset files
-
-# go support --2110
-
-alias bp="bin/patch ; bin/debug"
-alias bm="bmi"
-alias bmi="bin/minor ; bin/debug"
-alias bma="bin/major ; bin/debug"
-
-alias bd=bin/debug
-alias br=bin/release
-
-alias bde='execHelp debug $*'
-alias bre='execHelp release $*'
-alias bue='execHelp upx $*'
-
-function execHelp() {
-    local __os=$(uname | tr "A-Z" "a-z")
-    local __app=$(pwd | xargs basename)
-    local __arch=$(uname -m | tr "A-Z" "a-z")
-    [ "$__arch" = x86_64 ] && __arch=amd64
-    [ -z $1 ] && echo execHelp expects an argument. && return
-    local __env=$1
-    shift
-
-    build/${__env}/${__os}_${__arch}/${__app} $*
+    for files in $PATHFILE $PROFILES_CONFIG_DIR/Zsh/zsh.*.sh; do
+        if [ -f $files ] ; then
+            debug .zshrc sourcing $files
+            source $files
+        else
+            echo WARNING: cannot find $files 1>&2
+        fi 
+    done 
+    case $- in
+        *i*) #  "This shell is interactive"
+            NEWLINE=$'\n'
+            if [ -z $NO_ownPrompt ] ; then
+                setopt PROMPT_SUBST
+                PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
+                RPROMPT=
+            fi
+            bindkey '^R' history-incremental-search-backwarda
+            realUserForHadm
+            [ -z $NO_loadPost ]             && loadSource post
+            ;;
+        *) #echo "This is a script";;
+            ;;
+    esac
 }
 
-if [ -z $_goPathCheck ] ; then
-    _goPathCheck=yes
-    _p=$(ls $HOME/sdk/ | tail -n 1)
-    [ -d $HOME/sdk/$_p/bin ] && echo local go in $HOME/sdk/$_p/bin exists && PATH=$HOME/sdk/$_p/bin:$PATH
-    unset _p
-fi
-
-# go support --2110
-
-alias bp="bin/patch ; bin/debug"
-alias bm="bmi"
-alias bmi="bin/minor ; bin/debug"
-alias bma="bin/major ; bin/debug"
-
-alias bd=bin/debug
-alias br=bin/release
-
-alias bde='execHelp debug $*'
-alias bre='execHelp release $*'
-alias bue='execHelp upx $*'
-
-function execHelp() {
-    local __os=$(uname | tr "A-Z" "a-z")
-    local __app=$(pwd | xargs basename)
-    local __arch=$(uname -m | tr "A-Z" "a-z")
-    [ "$__arch" = x86_64 ] && __arch=amd64
-    [ -z $1 ] && echo execHelp expects an argument. && return
-    local __env=$1
-    shift
-
-    build/${__env}/${__os}_${__arch}/${__app} $*
-}
-
-if [ -z $_goPathCheck ] ; then
-    _goPathCheck=yes
-    _p=$(ls $HOME/sdk/ 2>/dev/null | tail -n 1)
-    [ -d $HOME/sdk/$_p/bin ] && echo local go in $HOME/sdk/$_p/bin exists && PATH=$HOME/sdk/$_p/bin:$PATH
-    unset _p
-fi
-
-local _go_helpers=$PROFILES_CONFIG_DIR/go.profile.post
-[ ! -r $_go_helpers  ] && echo WARNING: cannot find $_go_helpers 1>&2
-[ -r $_go_helpers ] && source $_go_helpers # && echo loaded go helpers
-
-if [ -z $EXTRA_PATH_DONE ] ; then   # only add the PATH once (or unset this variable)
-    local EXTRA_PRE_PATH=~/sdk/go1.17.3/bin # check for all these directories
-    for _path in $EXTRA_PRE_PATH ; do
-        [ -d "$_path" ] && PATH="$_path":"$PATH" && export EXTRA_PATH_DONE=true
-    done
-fi
+main $@
 return 0
 
 # EOF
