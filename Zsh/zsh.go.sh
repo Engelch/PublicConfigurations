@@ -23,7 +23,7 @@ alias bma=bumpmajor
 
 if [ -z $_goPathCheck ] ; then
     _goPathCheck=yes
-    _p=$(ls $HOME/sdk/ | tail -n 1)
+    _p=$(ls $HOME/sdk/ 2> /dev/null | tail -n 1)
     [ -d $HOME/sdk/$_p/bin ] && echo local go in $HOME/sdk/$_p/bin exists && PATH=$HOME/sdk/$_p/bin:$PATH
     unset _p
 fi
