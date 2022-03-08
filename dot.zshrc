@@ -85,7 +85,7 @@ else
     # Custom plugins may be added to $ZSH_CUSTOM/plugins/
     # Example format: plugins=(rails git textmate ruby lighthouse)
     # Add wisely, as too many plugins slow down shell startup.
-    plugins=
+    plugins=(rails git ruby history-incremental-search-backward)
 
     source $ZSH/oh-my-zsh.sh
 
@@ -144,7 +144,7 @@ function main() {
                 PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
                 RPROMPT=
             fi
-            bindkey '^R' history-incremental-search-backwarda
+            bindkey '^R' history-incremental-pattern-search-backward # history-incremental-search-backward
             realUserForHadm
             [ -z $NO_loadPost ]             && loadSource post
             ;;
