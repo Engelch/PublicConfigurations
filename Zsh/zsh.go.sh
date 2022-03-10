@@ -4,11 +4,12 @@ debug LOADING zsh.go.sh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [ ! -z $NO_zshGo ] && debug exiting zsh.go.sh && return 
 
-alias gopd="bumppatch ; godebug"
-alias gomi="gomid"
+alias gopad="bumppatch ; godebug"
+alias gopd=gopad
 alias gomid="bumpminor ; godebug"
-alias goma="gomid"
+alias gomi="gomid"
 alias gomad="bumpmajor ; godebug"
+alias goma="gomid"
 
 alias god=godebug
 alias gor=gorelease
