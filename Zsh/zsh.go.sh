@@ -68,8 +68,8 @@ function checkIfCurrentVersionExisting() {
     debug _outputDir $_outputDir
     debug _version $(version.sh)
     debug _checkname $_outputDir-${_appName}-$(version.sh)
-    [ -e $_checkname ] && echo version existing, increasing && echo bump$_patch && echo go$_releaseType
-    [ ! -e $_checkname ] && echo version NOT existing && echo go$_releaseType
+    [ -e $_checkname ] && echo version existing, increasing && echo bump$_patch && bump$_patch && echo go$_releaseType && go$_releaseType
+    [ ! -e $_checkname ] && echo version NOT existing && echo go$_releaseType && go$_releaseType
 }
 
 function execHelp() {
