@@ -46,7 +46,7 @@ function setupLinux() {          # Linux-specific settings of aliases and shell-
 function setupOSXPaths() {
    debug4 '>>>>' setupOSXPaths
    for _POTENTIAL_DIR in \
-      /opt/homebrew/bin /opt/homebrew/opt/gnu-getopt/bin /usr/local/opt/gnu-getopt/bin /opt/homebrew/opt/ \
+      /opt/homebrew/bin /opt/homebrew/sbin /opt/homebrew/opt/gnu-getopt/bin /usr/local/opt/gnu-getopt/bin /opt/homebrew/opt/ \
       /opt/homebrew/opt/openssl\@1.1/bin /usr/local/opt/openssl\@1.1/bin \
       /opt/homebrew/opt/curl/bin  /usr/local/opt/curl/bin/ /usr/local/opt/gnu-getopt/bin \
       /opt/homebrew/opt/java/bin /usr/local/opt/java/bin /Library/Java/JavaVirtualMachines/current/bin \
