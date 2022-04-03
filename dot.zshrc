@@ -138,6 +138,14 @@ function main() {
                     echo WARNING: cannot find $files 1>&2
                 fi 
             done 
+            # load os-specifics
+            if [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.os.$(uname).sh" ] ; then
+                debug8 OS is $(uname)
+                source "$PROFILES_CONFIG_DIR/Zsh/zsh.os.$(uname).sh"
+            else
+                err4 No OS-specific path file "$PROFILES_CONFIG_DIR/Zsh/zsh.os.$(uname).sh" found
+            fi
+            # prompts
             NEWLINE=$'\n'
             if [ -z $NO_ownPrompt ] ; then
                 setopt PROMPT_SUBST

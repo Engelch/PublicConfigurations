@@ -100,7 +100,7 @@ function setupPath() {
         done
 
         # OS-specific paths
-        if [ -z -z $NO_OS_Specifics ] ; then 
+        if [ -z $NO_OS_Specifics ] ; then 
             if [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.path.$(uname).sh" ] ; then
                 debug8 OS is $(uname)
                 source "$PROFILES_CONFIG_DIR/Zsh/zsh.path.$(uname).sh"
