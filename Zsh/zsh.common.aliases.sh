@@ -58,6 +58,6 @@ alias dvl='tmux select-pane -P "fg=white,bg=color017"'
 alias whbl='tmux select-pane -P "fg=white,bg=black"'
 alias blwh='tmux select-pane -P "fg=black,bg=white"'
 
-debug loaded zsh.aliases.sh
+# debug loaded zsh.aliases.sh
 
 # EOF

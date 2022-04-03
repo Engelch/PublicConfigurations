@@ -186,4 +186,8 @@ function tlsRsaPrv2PubKey() { openssl rsa -in $1 -pubout; }
 # ------ CSR
 function tlsCsr() { local file; for file in $*; do openssl req -in "$file"  -noout -utf8 -text | sed "s,^,$file:," | egrep -v '.*:.*:.*:'; done; }
 
+##########################################
+
+sshSetup # from zsh.common.crypto.sh
+
 # EOF

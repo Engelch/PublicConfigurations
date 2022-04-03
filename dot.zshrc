@@ -128,16 +128,16 @@ function main() {
    # potentially reread .zshenv, but required as oh-my-zsh seems to destroy the PATH variable.
     # Optimised just to reread the cached path file
 
-    for files in $PATHFILE $PROFILES_CONFIG_DIR/Zsh/zsh.common.*.sh; do
-        if [ -f $files ] ; then
-            debug .zshrc sourcing $files
-            source $files
-        else
-            echo WARNING: cannot find $files 1>&2
-        fi 
-    done 
     case $- in
         *i*) #  "This shell is interactive"
+            for files in $PATHFILE $PROFILES_CONFIG_DIR/Zsh/zsh.common.*.sh; do
+                if [ -f $files ] ; then
+                    debug .zshrc sourcing $files
+                    source $files
+                else
+                    echo WARNING: cannot find $files 1>&2
+                fi 
+            done 
             NEWLINE=$'\n'
             if [ -z $NO_ownPrompt ] ; then
                 setopt PROMPT_SUBST
