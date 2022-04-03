@@ -64,7 +64,7 @@ function killUser() { # kill all processes of a user $*
 
 function rlFull() {
    debugSet
-   debug common.zshrc in rl
+   debug START rlFull
    [ -f "$PATHFILE" ] && debug4 PATHFILE found, deleting it && /bin/rm -f ${PATHFILE} # reload this file w/ recreating the cache
    [ -f "$TEXPATHFILE" ] && debug4 TEXPATHFILE found, deleting it && /bin/rm -f ${TEXPATHFILE} # reload this file and flush all caches (PATH, TEXPATH)
    for file in ~/.zshenv ~/.zshrc ; do source $file; done

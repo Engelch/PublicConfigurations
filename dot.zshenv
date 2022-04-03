@@ -1,6 +1,8 @@
 
 # echo in zshenv
 
+debug START dot.zshenv
+
 # fix for docker
 [ -z "$SHELL" ] && echo Setting SHELL... && export SHELL=/bin/zsh
 
@@ -54,102 +56,85 @@ function errorExit()    { val=$1 ; shift ; error $* ; exit $val ; }
 # user-specific pre/post/... configuration
 function loadSource() {
    if [ -r "$HOME/.zshrc.$1" ] ; then debug loadSource .zshrc.$1 ; source "$HOME/.zshrc.$1" ; else 
-      debug loadSource FILE NOT FOUND $HOME/.zshrc.$1 
+      debug4 loadSource FILE NOT FOUND $HOME/.zshrc.$1 
    fi
 }
 
-export PATHFILE="$HOME/.zsh.profile.path"
-if [ ! -f "$PATHFILE" ] ; then
-    debug PATHFILE $PATHFILE not found, creating it...
-    [ $UID = 0 ] && debug4 root PATH initialisation &&  PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
-    [ $UID != 0 ] && debug4 normal user PATH init &&    PATH=./bin:/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
-    for _POTENTIAL_DIR in \
-        $HOME/go/bin \
-        $HOME/Library/Android/sdk/platform-tools /usr/local/share/dotnet /usr/local/go/bin \
-        $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
-        /usr/local/google-cloud-sdk/ $HOME/google-cloud-sdk/ $HOME/.pub-cache/bin /opt/flutter/bin \
-        $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin \
-        /opt/PublicConfigurations/bin $HOME/PublicConfigurations/bin $HOME/PublicConfigurations/bin_$(uname | tr [A-Z] [a-z])-$(uname -m)\
-        /usr/local/google-cloud-sdk/bin \
-        /opt/android-studio/bin
-    do
-        debug4 checking for dir $_POTENTIAL_DIR
-        [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
-    done
-    # only check for WSL
-    [ -d /mnt/c/ ] && for _POTENTIAL_DIR in \
-         /mnt/c/Windows/System32 /mnt/c/Windows /mnt/c/Windows/System32/wbem \
-        /mnt/c/Windows/System32/WindowsPowerShell/v1.0 /mnt/c/Users/$USER/AppData/Local/Microsoft/WindowsApps \
-        /mnt/c/go/bin /mnt/c/Program\ Files/Microsoft\ VS\ Code/bin \
-        /mnt/c/Program\ Files/dotnet/ /mnt/c/Program\ Files/Haskell\ Platform/actual/bin \
-        /mnt/c/Program\ Files/Haskell\ Platform/actual/winghci $HOME/$USER/AppData/Roaming/local/bin \
-        /mnt/c/Program\ Files/Docker/Docker/resources/bin /mnt/c/Program\ Files/7-Zip \
-        /mnt/c/Program\ Files/Affinity/Designer /mnt/c/Program\ Files/Affinity/Photo \
-        /mnt/c/Program\ Files/MiKTeX\ 2.9/miktex/bin/x64 /mnt/c/Program\ Files/PDFCreator /mnt/c/Program\ Files/PDFsam\ Basic \
-        /mnt/c/Program\ Files/VueScan /mnt/c/Program\ Files/VeraCrypt /mnt/c/Program\ Files/Wireshark \
-        /mnt/c/Program\ Files/draw.io /mnt/c/Program\ Files/Mozilla\ Firefox /snap/bin/
-    do
-        debug4 checking for dir $_POTENTIAL_DIR
-        [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
-    done
-    [ $(uname) = Darwin ] && \
-    if [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" ] ; then
-        source "$PROFILES_CONFIG_DIR/Zsh/zsh.os-specific.sh" 
-        setupOSXPaths
-    else
-        err CANNOT find zsh.os-specific.sh //////////////////////////////////////////
-    fi
-
-    debug4 latex bins....
-    _latex=$(find /usr/local/texlive -maxdepth 4 -name universal-darwin &>/dev/null | sort | tail -n1)
-    [ ! -z $_latex ] && PATH=$PATH:$_latex
-     # +o nomatch ::= by default, if a command line contains a globbing expression which doesn't match anything, Zsh will print the error message you're seeing, and not run the command at all. 
-    [ -d /mnt/c/ ] && debug4 latex bins WSL..... && _jdk=$(setopt +o nomatch; find /mnt/c/Program\ Files/Java/jdk* -maxdepth 2 -name bin &>/dev/null | sort -n | tail -n1)
-    [ ! -z $_jdk ] && PATH=$PATH:$_jdk
-
-    if $(which latex > /dev/null); then
-        debug4 latex found, building cache file...
-        # executing the finds takes time. So, let's cache the result.
-        TEXBASEDIR=${TEXBASEDIR:-/usr/local/texlive}
-        TEXPATHFILE="$HOME/.zshrc.tex.path"
-        if [ -d "$TEXBASEDIR" -a ! -f "$TEXPATHFILE" ] ; then
-        echo creating TEXPATHFILE $TEXPATHFILE...
-        # determine current distribution (just for a century :-)
-        TEX_DISTRIB_DIR=$(find /usr/local/texlive -type d -mindepth 1 -maxdepth 1 | grep /20 | tail -n 1)
-        debug4 TEX_DISTRIB_DIR is $TEX_DISTRIB_DIR
-        # determine non-annual TeX-directories (not required at the moment)
-        # TEX_OTHER_DIRS=$(ls -d1 /usr/local/texlive/* | egrep -v '.*20[[:digit:]][[:digit:]]')
-        _os=$(uname | tr '[A-Z]' '[a-z]')
-        # limit depth for speed purposes
-        find "$TEX_DISTRIB_DIR" -type d -maxdepth 4 -name 'bin' | egrep '/bin$'  >| $TEXPATHFILE
-        find "$TEX_DISTRIB_DIR" -type d -maxdepth 4 -name "\*$_os"   >> $TEXPATHFILE
-        fi
-        if [ -f "$TEXPATHFILE" ] ; then
-        for _line in $(egrep -v '^[[:space:]]*$' $TEXPATHFILE) ; do
-            PATH=$PATH:"$_line"
+# setupPath sets the path
+function setupPath() {
+    export PATHFILE="$HOME/.zsh.profile.path"
+    if [ ! -f "$PATHFILE" ] ; then
+        debug4 PATHFILE $PATHFILE not found, creating it...
+        # set up initial path
+        [ $UID = 0 ] && debug4 root PATH initialisation &&  PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+        [ $UID != 0 ] && debug4 normal user PATH init &&    PATH=./bin:/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
+        # add directories if existing for all platforms
+        for _POTENTIAL_DIR in \
+            $HOME/go/bin \
+            $HOME/Library/Android/sdk/platform-tools /usr/local/share/dotnet /usr/local/go/bin \
+            $HOME/bin $HOME/Bin $HOME/.dotnet/tools $HOME/.rvm/bin \
+            /usr/local/google-cloud-sdk/ $HOME/google-cloud-sdk/ $HOME/.pub-cache/bin /opt/flutter/bin \
+            $HOME/.linkerd2/bin $HOME/.local/bin $HOME/google-cloud-sdk/bin \
+            /opt/PublicConfigurations/bin $HOME/PublicConfigurations/bin $HOME/PublicConfigurations/bin_$(uname | tr [A-Z] [a-z])-$(uname -m)\
+            /usr/local/google-cloud-sdk/bin \
+            /opt/android-studio/bin
+        do
+            debug4 checking for dir $_POTENTIAL_DIR
+            [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
         done
+        # only check for WSL
+        [ -d /mnt/c/ ] && for _POTENTIAL_DIR in \
+            /mnt/c/Windows/System32 /mnt/c/Windows /mnt/c/Windows/System32/wbem \
+            /mnt/c/Windows/System32/WindowsPowerShell/v1.0 /mnt/c/Users/$USER/AppData/Local/Microsoft/WindowsApps \
+            /mnt/c/go/bin /mnt/c/Program\ Files/Microsoft\ VS\ Code/bin \
+            /mnt/c/Program\ Files/dotnet/ /mnt/c/Program\ Files/Haskell\ Platform/actual/bin \
+            /mnt/c/Program\ Files/Haskell\ Platform/actual/winghci $HOME/$USER/AppData/Roaming/local/bin \
+            /mnt/c/Program\ Files/Docker/Docker/resources/bin /mnt/c/Program\ Files/7-Zip \
+            /mnt/c/Program\ Files/Affinity/Designer /mnt/c/Program\ Files/Affinity/Photo \
+            /mnt/c/Program\ Files/MiKTeX\ 2.9/miktex/bin/x64 /mnt/c/Program\ Files/PDFCreator /mnt/c/Program\ Files/PDFsam\ Basic \
+            /mnt/c/Program\ Files/VueScan /mnt/c/Program\ Files/VeraCrypt /mnt/c/Program\ Files/Wireshark \
+            /mnt/c/Program\ Files/draw.io /mnt/c/Program\ Files/Mozilla\ Firefox /snap/bin/
+        do
+            debug4 checking for dir $_POTENTIAL_DIR
+            [ -d "$_POTENTIAL_DIR/." ] && debug8 adding path element $_POTENTIAL_DIR && PATH="$_POTENTIAL_DIR":$PATH
+        done
+
+        # OS-specific paths
+        if [ -z -z $NO_OS_Specifics ] ; then 
+            if [ -f "$PROFILES_CONFIG_DIR/Zsh/zsh.path.$(uname).sh" ] ; then
+                debug8 OS is $(uname)
+                source "$PROFILES_CONFIG_DIR/Zsh/zsh.path.$(uname).sh"
+            else
+                err4 No OS-specific path file "$PROFILES_CONFIG_DIR/Zsh/zsh.path.$(uname).sh" found
+            fi
+        else
+            debug4 NO_OS_Specifics was set
+        fi    
+
+        [ -z $NO_LaTeX ] && source $PROFILES_CONFIG_DIR/Zsh/zsh.path.latex.sh 
+
+        # go sdk setup, NO_GoSDK might require a second load as loadSource pre is not executed before 
+        if [ -z $NO_GoSDK -a -d $HOME/sdk ] ; then
+            local -r _go=$(/bin/ls -1 $HOME/sdk/ | tail -n 1 | sed 's,/$,,')
+            PATH=$HOME/sdk/$_go/bin:$PATH
+            export GOROOT=$HOME/sdk/$_go/
+            debug4  Setting PATH for local go environment and GOROOT to $GOROOT
         fi
+
+        #### PATH should not be touched after this _line anymore, here begins the caching
+        debug4 Writing PATHFILE $PATHFILE ...
+        echo "PATH=\"$PATH\"" > "$PATHFILE"
     else
-        debug4 NOT FOUND latex
+        debug4 .. PATHFILE $PATHFILE found, sourcing cache ...
+        source "$PATHFILE"
+        debug8 PATH is
+        debug8 $PATH
     fi
+    unset _POTENTIAL_DIR _os  _file _line _latex _jdk
+}
 
-    if [ -d $HOME/sdk ] ; then
-        local -r _go=$(/bin/ls -1 $HOME/sdk/ | tail -n 1 | sed 's,/$,,')
-        PATH=$HOME/sdk/$_go/bin:$PATH
-        export GOROOT=$HOME/sdk/$_go/
-        debug4  Setting PATH for local go environment and GOROOT to $GOROOT.
-    fi
-
-    #### PATH should not be touched after this _line anymore, here begins the caching
-    debug4 Writing PATHFILE $PATHFILE ...
-    echo "PATH=\"$PATH\"" > "$PATHFILE"
-else
-    debug4 .. PATHFILE $PATHFILE found, sourcing cache ...
-    source "$PATHFILE"
-    debug8 PATH is
-    debug8 $PATH
-fi
-unset _POTENTIAL_DIR _os  _file _line _latex _jdk
+loadSource env
+[ -z $NO_setupPath ] && debug4 setupPath... && setupPath
 
 export ZSH_DISABLE_COMPFIX=true
 export LESS='-iR'    # -i := searches are case insensitive; -R := Like -r, but only ANSI "color" escape sequences are output in "raw" form. The default is to display control characters using the caret notation.
@@ -163,4 +148,5 @@ export VISUAL=vim
 export EDITOR=vim    # bsroot has no notion about VISUAL
 export BLOCKSIZE=1K
 
+debug STOP dot.zshenv
 # EOF
