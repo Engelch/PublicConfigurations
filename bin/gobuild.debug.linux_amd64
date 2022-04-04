@@ -141,9 +141,11 @@ debugExecIfDebug read
 
 echo env GOARCH=${_osArch} GOOS=${_osType} ${_goarm} go build ${_ldFlags} -o ${_outputDir}/${_appName}-${_appVersion}${_upx}
 env GOARCH=${_osArch} GOOS=${_osType} ${_goarm} go build ${_ldFlags} -o ${_outputDir}/${_appName}-${_appVersion}${_upx}
+# ldflags -s is already stripping; double strip caused problems on Darwin-arm64
 # strip only if building for the same host as we are compiling on
-[ $_hostarch = $_osArch -a $_osType = $_hostostype ] && \
-  [ "$_releaseType" = release -o "$_releaseType" = upx ] && echo stripping binary && strip ${_outputDir}/${_appName}-${_appVersion}${_upx}
+# [ $_hostarch = $_osArch -a $_osType = $_hostostype ] && \
+#   [ "$_releaseType" = release -o "$_releaseType" = upx ] && \
+#   echo stripping binary && strip ${_outputDir}/${_appName}-${_appVersion}${_upx}
 [ ! -z ${_upx} ] && echo upx ${_outputDir}/${_appName}-${_appVersion}${_upx} && upx ${_outputDir}/${_appName}-${_appVersion}${_upx}
 ln -fs ${_appName}-${_appVersion}${_upx} ${_outputDir}/${_appName}
 
