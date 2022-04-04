@@ -1,6 +1,7 @@
 
 # echo in zshenv
 
+function debug() { [ "$DEBUG_FLAG_BASH" = TRUE ] && echo '[DEBUG]' $* 1>&2 ; return 0 ; }
 debug START dot.zshenv
 
 # fix for docker
@@ -32,7 +33,6 @@ function soMessage()
 # debug functions. Only create output if debugSet was called before. Stop output if debugUnset was called.
 function debugSet() {   export DEBUG_FLAG_BASH=TRUE ; }
 function debugUnset() { export DEBUG_FLAG_BASH= ; }
-function debug() { [ "$DEBUG_FLAG_BASH" = TRUE ] && echo '[DEBUG]' $* 1>&2 ; return 0 ; }
 function debug4()       { [ "$DEBUG_FLAG_BASH" = TRUE ] && echo '[DEBUG]    ' $* 1>&2 ; return 0 ; }
 function debug8()       { [ "$DEBUG_FLAG_BASH" = TRUE ] && echo '[DEBUG]        ' $* 1>&2 ; return 0 ; }
 function debug12()       { [ "$DEBUG_FLAG_BASH" = TRUE ] && echo '[DEBUG]            ' $* 1>&2 ; return 0 ; }
