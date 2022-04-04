@@ -8,7 +8,7 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-if [ ! -d "$ZSH/." ] ; then 
+if [ ! -d "$ZSH/." -o ! -z ownPrompt ] ; then 
     unset ZSH
     unset fg
     declare -A fg
