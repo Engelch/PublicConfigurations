@@ -8,14 +8,13 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-if [ ! -d "$ZSH/." -o ! -z ownPrompt ] ; then 
+if [ ! -d "$ZSH/." -o ! -z $ownPrompt ] ; then 
     unset ZSH
     unset fg
     declare -A fg
     fg[red]=$(tput setaf 1)
     fg[yellow]=$(tput setaf 3)
     reset_color=$(tput setaf 7)
-    unset NO_ownPrompt
 else
     # Set name of the theme to load --- if set to "random", it will
     # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -23,7 +22,6 @@ else
     # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
     #ZSH_THEME="robbyrussell"
     ZSH_THEME="agnoster"
-    [ ! -z $ZSH_THEME ] && export NO_ownPrompt=TRUE
 
     # Set list of themes to pick from when loading at random
     # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -76,6 +74,7 @@ else
     # or set a custom format using the strftime function format specifications,
     # see 'man strftime' for details.
     # HIST_STAMPS="mm/dd/yyyy"
+    HIST_STAMPS="yyyy-mm-dd"
 
     # Would you like to use another custom folder than $ZSH/custom?
     # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -88,32 +87,6 @@ else
     plugins=(rails git ruby)
 
     source $ZSH/oh-my-zsh.sh
-
-    # User configuration
-
-    # export MANPATH="/usr/local/man:$MANPATH"
-
-    # You may need to manually set your language environment
-    # export LANG=en_US.UTF-8
-
-    # Preferred editor for local and remote sessions
-    # if [[ -n $SSH_CONNECTION ]]; then
-    #   export EDITOR='vim'
-    # else
-    #   export EDITOR='mvim'
-    # fi
-
-    # Compilation flags
-    # export ARCHFLAGS="-arch x86_64"
-
-    # Set personal aliases, overriding those provided by oh-my-zsh libs,
-    # plugins, and themes. Aliases can be placed here, though oh-my-zsh
-    # users are encouraged to define aliases within the ZSH_CUSTOM folder.
-    # For a full list of active aliases, run `alias`.
-    #
-    # Example aliases
-    # alias zshconfig="mate ~/.zshrc"
-    # alias ohmyzsh="mate ~/.oh-my-zsh"
 fi
 
 
@@ -147,7 +120,7 @@ function main() {
             fi
             # prompts
             NEWLINE=$'\n'
-            if [ -z $NO_ownPrompt ] ; then
+            if [ ! -z $ownPrompt ] ; then
                 setopt PROMPT_SUBST
                 PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
                 RPROMPT=
