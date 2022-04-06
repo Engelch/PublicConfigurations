@@ -122,7 +122,7 @@ function main() {
             NEWLINE=$'\n'
             if [ ! -z $ownPrompt ] ; then
                 setopt PROMPT_SUBST
-                PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}
+                PROMPT='%(?..%F{red}%?%F{white} • )%F{green}%n@%m%F{white} • %* • %F{yellow}$(gitContents)%F{white} • %F{red}$AWS_PROFILE%F{white} • %{%F{cyan}%c%{%F{white}%}'${NEWLINE}%F{black}
                 RPROMPT=
             fi
             bindkey '^R' history-incremental-pattern-search-backward # history-incremental-search-backward

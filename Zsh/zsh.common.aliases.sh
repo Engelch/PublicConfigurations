@@ -52,9 +52,10 @@ alias tn=tw
 alias tj='tmux join-pane -s'
 alias wh=which
 
-alias prd='tmux select-pane -P "fg=yellow,bg=color052"' # colour values from https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
-alias qul='tmux select-pane -P "fg=black,bg=color231"'
+alias prd='tmux select-pane -P "fg=white,bg=color052"' # colour values from https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
+alias qul='tmux select-pane -P "fg=black,bg=color187"'
 alias dvl='tmux select-pane -P "fg=white,bg=color017"'
+alias loc='tmux select-pane -P "fg=white,bg=color237"'
 alias whbl='tmux select-pane -P "fg=white,bg=black"'
 alias blwh='tmux select-pane -P "fg=black,bg=white"'
 
