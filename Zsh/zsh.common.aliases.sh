@@ -54,6 +54,7 @@ alias wh=which
 
 alias prd='tmux select-pane -P "fg=white,bg=color052"' # colour values from https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
 alias prdloc='tmux select-pane -P "fg=red,bg=color016"' # colour values from https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
+alias prd2=prdloc
 alias qul='tmux select-pane -P "fg=black,bg=color187"'
 alias dvl='tmux select-pane -P "fg=white,bg=color017"'
 alias loc='tmux select-pane -P "fg=white,bg=color237"'
